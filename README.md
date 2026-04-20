@@ -7,5 +7,5 @@
 
 A customizable macro based tool intended to be used for Jailbreak.
 
-Featuring a customizable hotkey and loadout.
-Optimized to work as fast as possible! (Times as low as **70ms** for 10 weapon loadouts + explosive refills!)
+Featuring a customizable hotkey and loadout,
+optimized to work as fast as possible! (Times as low as **70ms** for 10 weapon loadouts + explosive refills!)
