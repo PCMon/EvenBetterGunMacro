@@ -13,10 +13,10 @@ Tired of a slow, unoptimized and static hardcoded gunstore macro?
 Featuring a customizable hotkey, loadout, and nerf status setting,
 optimized to work as fast as possible! (Times as low as **70ms** for 10 weapon loadouts + explosive refills!)
 
+Settings save, so you only need to input them once, boots without any GUI afterwards, to change your settings, simply right click it in the system tray!
+
 <img src=https://github.com/PCMon/EvenBetterGunMacro/blob/main/gif.gif/>
 
 ---
 
 Works on regular servers AND crew battles, and is stable on 60fps! 
-
-Settings save, so you only need to input them once, boots without any GUI afterwards, to change your settings, simply right click it in the system tray!
