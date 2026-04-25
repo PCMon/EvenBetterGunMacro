@@ -8,7 +8,7 @@
 A customizable macro based tool intended to be used for Jailbreak.  
 
 
-Tired of a slow, unoptimized and static hardcoded gunstore macro?  
+Tired of a slow, unoptimized and static hardcoded gunstore macro? Be in and out of the gunstore before the door even closes!
 
 Featuring a customizable hotkey, loadout, and nerf status setting,
 optimized to work as fast as possible! (Times as low as **70ms** for 10 weapon loadouts + explosive refills!)
