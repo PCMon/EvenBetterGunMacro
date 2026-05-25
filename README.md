@@ -28,7 +28,7 @@ Download the <a href="https://github.com/PCMon/EvenBetterGunMacro/releases/lates
 
 ## Compiling
 
-1. Download the <a href="https://github.com/PCMon/EvenBetterGunMacro/blob/main/Source/EBGMraw.ahk" target="_blank">source code</a> as well as <a href="https://autohotkey.com" target="_blank">AutoHotkey v2</a>.
+1. Download the <a href="https://github.com/PCMon/EvenBetterGunMacro/blob/main/Source/EBGMraw.ahk" target="_blank">source code</a> as well as <a href="https://autohotkey.com" target="_blank">AutoHotkey v2</a>. <sub>(Ctrl + Click to open in new tab.)</sub>
    - At this point you can use the raw .ahk file by launching it with AutoHotkey or continue to compile to exe. <br><br>
 2. Right click the raw .ahk source and select `Compile Script (GUI)`. <br><br>
 3. Ensure the `Source (script file)` box has the correct location to your raw .ahk source code.
