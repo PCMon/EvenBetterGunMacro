@@ -1,7 +1,8 @@
 ## EvenBetterGunMacro! (AutoHotkey v2)
 
 
-<img width="1022" height="465" alt="Screenshot 2026-04-20 131856" src="https://github.com/user-attachments/assets/67a71609-c8f8-4383-b29e-f9a20e3ff3dc" />
+<img width="1020" height="399" alt="Screenshot 2026-05-25 084350" src="https://github.com/user-attachments/assets/98ff2d05-89f7-48a8-af7a-83a5e1fc8f0d" />
+
 
 ---
 
