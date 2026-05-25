@@ -1,4 +1,4 @@
-## EvenBetterGunMacro! (AutoHotkey v2)
+# EvenBetterGunMacro! (AutoHotkey v2)
 
 
 <img width="1020" height="399" alt="Screenshot 2026-05-25 084350" src="https://github.com/user-attachments/assets/98ff2d05-89f7-48a8-af7a-83a5e1fc8f0d" />
@@ -18,6 +18,23 @@ Settings save, so you only need to input them once, boots without any GUI afterw
 
 <img src=https://github.com/PCMon/EvenBetterGunMacro/blob/main/gif.gif/>
 
+Works on regular servers AND crew battles, and is stable on 60fps! 
+
 ---
 
-Works on regular servers AND crew battles, and is stable on 60fps! 
+## Installing
+
+Download the [latest version's executable](https://github.com/PCMon/EvenBetterGunMacro/releases/latest) or manually compile source.
+
+## Compiling
+
+- Download the [source code](Source/EBGMraw.ahk) as well as [AutoHotkey v2](https://www.autohotkey.com/).
+  - At this point you can use the raw .ahk file by launching it with AutoHotkey or continue to compile to exe.
+- Right click the raw .ahk source and select `Compile Script (GUI)`.
+- Ensure the `Source (script file)` box has the correct location to your raw .ahk source code.
+  - (Optional) Set a destination for your compiled exe to go.
+  - (Optional) Set a custom icon for the program, the default for EBGM is included in the main directory.
+- Under `Base File (.bin, .exe)`, select v2.0.xx.
+  - Choose either U32 (AutoHotkey32.exe) or U64 (AutoHotkey64.exe).
+    - Compiling with U64 may yield improved performance, but compiling with U32 will improve compatibility with older versions of windows.
+- Finally, press **Convert**.
