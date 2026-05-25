@@ -28,13 +28,13 @@ Download the [latest version's executable](https://github.com/PCMon/EvenBetterGu
 
 ## Compiling
 
-- Download the [source code](Source/EBGMraw.ahk) as well as [AutoHotkey v2](https://www.autohotkey.com/).
-  - At this point you can use the raw .ahk file by launching it with AutoHotkey or continue to compile to exe.
-- Right click the raw .ahk source and select `Compile Script (GUI)`.
-- Ensure the `Source (script file)` box has the correct location to your raw .ahk source code.
-  - (Optional) Set a destination for your compiled exe to go.
-  - (Optional) Set a custom icon for the program, the default for EBGM is included in the main directory.
-- Under `Base File (.bin, .exe)`, select v2.0.xx.
-  - Choose either U32 (AutoHotkey32.exe) or U64 (AutoHotkey64.exe).
-    - Compiling with U64 may yield improved performance, but compiling with U32 will improve compatibility with older versions of windows.
-- Finally, press **Convert**.
+1. Download the [source code](Source/EBGMraw.ahk) as well as [AutoHotkey v2](https://www.autohotkey.com/).
+   - At this point you can use the raw .ahk file by launching it with AutoHotkey or continue to compile to exe. <br><br>
+2. Right click the raw .ahk source and select `Compile Script (GUI)`. <br><br>
+3. Ensure the `Source (script file)` box has the correct location to your raw .ahk source code.
+   - (Optional) Set a destination for your compiled exe to go.
+   - (Optional) Set a custom icon for the program, the default for EBGM is included in the main directory. <br><br>
+4. Under `Base File (.bin, .exe)`, select v2.0.xx.
+   - Choose either U32 (AutoHotkey32.exe) or U64 (AutoHotkey64.exe).
+     - Compiling with U64 may yield improved performance, but compiling with U32 will improve compatibility with older versions of windows. <br><br>
+5. Finally, press **Convert**.
