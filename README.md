@@ -24,11 +24,11 @@ Works on regular servers AND crew battles, and is stable on 60fps!
 
 ## Installing
 
-Download the [latest version's executable](https://github.com/PCMon/EvenBetterGunMacro/releases/latest) or manually compile source.
+Download the <a href="https://github.com/PCMon/EvenBetterGunMacro/releases/latest" target="_blank">latest version's executable</a> or manually compile source.
 
 ## Compiling
 
-1. Download the [source code](Source/EBGMraw.ahk) as well as [AutoHotkey v2](https://www.autohotkey.com/).
+1. Download the <a href="https://github.com/PCMon/EvenBetterGunMacro/blob/main/Source/EBGMraw.ahk" target="_blank">source code</a> as well as <a href="https://autohotkey.com" target="_blank">AutoHotkey v2</a>.
    - At this point you can use the raw .ahk file by launching it with AutoHotkey or continue to compile to exe. <br><br>
 2. Right click the raw .ahk source and select `Compile Script (GUI)`. <br><br>
 3. Ensure the `Source (script file)` box has the correct location to your raw .ahk source code.
