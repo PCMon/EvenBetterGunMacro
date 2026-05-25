@@ -1,0 +1,25 @@
+v1.0-r
+ - Initial release.
+
+v1.1-r
+- Fixed an issue with not being able to change settings due to a hotkey function issue.
+
+v1.2-r
+- Fixed an issue that caused an error when attempting to create config file in a folder that did not exist.
+
+v1.3-r
+- Restructured system tray menu.
+- Skipped welcome screen when selecting "EBGM Settings" in the system tray.
+
+v1.4-r 
+- OOBE on first startup, otherwise setting GUIs do not cycle.
+- Removed default AutoHotkey v2 tray objects.
+- Created "EBGM Settings" submenu to allow for specific setting changes.
+- Added "Fix (Clears Config)" option in system tray for users experiencing issues.
+- Added "Exit" tray object to close the tool.
+- Settings now persist inside of their text fields instead of being blank.
+
+v1.5-r
+- Now closes gun store UI when macro finishes.
+- Updated menu UIs to be cleaner
+- Now has light mode, automatically applies when system theme is light mode.
