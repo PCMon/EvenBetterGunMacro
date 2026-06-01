@@ -45,7 +45,9 @@ Download the <a href="https://github.com/PCMon/EvenBetterGunMacro/releases/lates
 
 You can verify that the newly compiled executable from the source is the same executable under releases with these steps.
 
-1. Navigate to <a href="https://github.com/PCMon/EvenBetterGunMacro/releases/latest" target="_blank">latest release</a> and view the SHA256 hash github automatically provides for that executable. <br><br>
+1. Navigate to <a href="https://github.com/PCMon/EvenBetterGunMacro/releases/latest" target="_blank">latest release</a> and view the SHA256 hash github automatically provides for that executable. <br>
+<img width="1216" height="235" alt="example" src="https://github.com/user-attachments/assets/0ef8a20a-8b04-4baf-92cd-a1924a051c3d" /> <br><br>
+
 2. Open the Windows Command Prompt or a Powershell terminal. <sub>(Administrator privilages are not required.) <br><br>
 3. Run the Windows tool `certutil` by doing `certutil -hashfile C:\Path\To\Your\Program\program.exe SHA256`. <br><br>
 4. Verify that the output SHA256 hash is identical to that which is listed beside the executable on the releases tab.
