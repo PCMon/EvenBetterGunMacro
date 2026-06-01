@@ -1,8 +1,7 @@
 # EvenBetterGunMacro! (AutoHotkey v2)
 <a href="https://github.com/PCMon/EvenBetterGunMacro/releases/latest" target="_blank">Install</a> / [Compile](#compiling) and [Verify](#verifying)
 
-<img width="1020" height="399" alt="Screenshot 2026-05-25 084350" src="https://github.com/user-attachments/assets/98ff2d05-89f7-48a8-af7a-83a5e1fc8f0d" />
-
+<img width="1198" height="491" alt="Screenshot 2026-06-01 020235" src="https://github.com/user-attachments/assets/f871b994-7706-4f62-9449-9880e3b7d6b6" />
 
 ---
 
