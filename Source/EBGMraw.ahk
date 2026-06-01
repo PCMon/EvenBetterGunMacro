@@ -4,9 +4,8 @@
 #SingleInstance Force
 Persistent
 
-global ConfigLine := ["", "", ""]
+global ConfigLine := ["", "", "", "false"]
 WeaponSlots := Map("nerfpistol", 1, "nerfrevolver", 2, "pistol", 3, "shotgun", 4, "rifle", 5, "revolver", 6, "flint", 7, "ak", 8, "sword", 9, "uzi", 10, "forcefield", 11, "plasmapistol", 12, "plasmashotgun", 13, "sniper", 14, "c4", 15, "c4buy", 16, "smoke", 17, "smokebuy", 18, "grenade", 19, "grenadebuy", 20, "rpgbuy", 21, "rpg", 22)
-SleepTime := 30 ; 30ms enables consistent macro use on 60fps without sacrificing speed
 
 Theme := RegRead("HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize", "SystemUsesLightTheme") ; get system light/darkmode preference
 if Theme = 1 {
@@ -23,6 +22,7 @@ SubMenuSettings := Menu()
 SubMenuSettings.Add("Hotkey", HotkeyGUI.Bind(false))
 SubMenuSettings.Add("Loadout", LoadoutGUI.Bind(false))
 SubMenuSettings.Add("Nerf", NerfGUI.Bind(false))
+SubMenuSettings.Add("Sub 60 Compat", ToggleSub60Compat)
 A_TrayMenu.Add("EBGM Settings", SubMenuSettings)
 A_TrayMenu.Add()
 A_TrayMenu.Add("Fix (Clears Config)", EndApp.Bind(true))
@@ -35,14 +35,32 @@ if CheckForConfig() { ; Check for config and unpack if it exists, else run setup
     if !CheckForUINav() {
         UIWarnGUI(false)
     }
-}
-else {
+    try { ; fallback for pre-v2.0 config files
+        if ConfigLine[4] != "true" and ConfigLine[4] != "false" {
+            ConfigLine[4] := "false"
+            WriteToConfig()
+        }
+    } if IndexError {
+        ConfigLine.Push("false")
+        WriteToConfig()
+    }
+    if ConfigLine[4] = "true" {
+        SubMenuSettings.Check("Sub 60 Compat")
+    }
+} else {
     WelcomeGUI(true)
 }
 
 Main(*) { ; main macro logic
     WeaponSelection := ConfigLine[2]
     WeaponSelectionArray := StrSplit(WeaponSelection, A_Space)
+    if ConfigLine[4] = "true" {
+        SleepTime := 60
+        MsgBox(SleepTime)
+    } else {
+        SleepTime := 30
+        MsgBox(SleepTime)
+    }
     Send "\"
     Send "{LEFT}"
     Send "{LEFT}"
@@ -194,22 +212,22 @@ HotkeyGUI(OOBE, *) {
         Window.Add("Text",, "Please enter a hotkey:")
         Window.SetFont("norm s10 q5 cWhite", "Segoe UI")
         Window.Add("Text",, "You can make modifiers with characters such as:`n#(Win),  !(Alt),  ^(Ctrl),  +(Shift).")
-        Window.Add("Link",, '<a href="https://www.autohotkey.com/docs/v2/KeyList.htm">Valid Hotkeys.</a>')
-        EditBox := Window.Add("Edit", "w70 h21 Center -E0x0200 +Border +0x0200 Background202020 cWhite", ConfigLine[1])
+        Window.Add("Link", "x225 y13", '<a href="https://www.autohotkey.com/docs/v2/KeyList.htm">Valid Hotkeys.</a>')
+        EditBox := Window.Add("Edit", "x20 y100 w70 h21 Center -E0x0200 +Border +0x0200 Background202020 cWhite", ConfigLine[1])
         EditBox.Focus()
         Send("{End}")
-        Button := Window.Add("Text", "x95 y130 w80 h21 Center +Border +0x0200 Background202020 cWhite", "Continue")
+        Button := Window.Add("Text", "x95 y100 w80 h21 Center +Border +0x0200 Background202020 cWhite", "Continue")
     } else if Theme = "Light" {
         Window.BackColor := "0xf3f3f3"
         Window.SetFont("bold s13 q5 c000000", "Segoe UI")
         Window.Add("Text",, "Please enter a hotkey:")
         Window.SetFont("norm s10 q5 c000000", "Segoe UI")
         Window.Add("Text",, "You can make modifiers with characters such as:`n#(Win),  !(Alt),  ^(Ctrl),  +(Shift).")
-        Window.Add("Link",, '<a href="https://www.autohotkey.com/docs/v2/KeyList.htm">Valid Hotkeys.</a>')
-        EditBox := Window.Add("Edit", "w70 h21 Center -E0x0200 +Border +0x0200 Backgroundf3f3f3 cBlack", ConfigLine[1])
+        Window.Add("Link", "x225 y13", '<a href="https://www.autohotkey.com/docs/v2/KeyList.htm">Valid Hotkeys.</a>')
+        EditBox := Window.Add("Edit", "x20 y100 w70 h21 Center -E0x0200 +Border +0x0200 Backgroundf3f3f3 cBlack", ConfigLine[1])
         EditBox.Focus()
         Send("{End}")
-        Button := Window.Add("Text", "x95 y130 w80 h21 Center +Border +0x0200 Backgroundf3f3f3 cBlack", "Continue")
+        Button := Window.Add("Text", "x95 y100 w65 h21 Center +Border +0x0200 Backgroundf3f3f3 cBlack", "Continue")
     }
     if OOBE = true {
         Button.OnEvent("Click", HotkeyCheckAndPassOOBE)
@@ -258,20 +276,20 @@ LoadoutGUI(OOBE, *) {
         Window.Add("Text",, "Please enter your loadout:")
         Window.SetFont("norm s10 q5 cWhite", "Segoe UI")
         Window.Add("Text",, "Selections: nerfpistol nerfrevolver pistol shotgun rifle revolver flint ak sword uzi forcefield plasmapistol `nplasmashotgun sniper c4 c4buy smoke smokebuy grenade grenadebuy rpgbuy rpg`n(c4buy and rpgbuy automatically grab ten.)`n`nExample: pistol revolver shotgun c4 c4buy forcefield.")
-        EditBox := Window.Add("Edit", "w500 h21 -E0x0200 +Border +0x0200 Background202020 cWhite", ConfigLine[2])
+        EditBox := Window.Add("Edit", "x20 y154 w515 h21 -E0x0200 +Border +0x0200 Background202020 cWhite", ConfigLine[2])
         EditBox.Focus()
         Send("{End}")
-        Button := Window.Add("Text", "x525 y154 w80 h21 Center +Border +0x0200 Background202020 cWhite", "Continue")
+        Button := Window.Add("Text", "x540 y154 w80 h21 Center +Border +0x0200 Background202020 cWhite", "Continue")
     } else if Theme = "Light" {
         Window.BackColor := "0xf3f3f3"
         Window.SetFont("bold s15 q5 c000000", "Segoe UI")
         Window.Add("Text",, "Please enter your loadout:")
         Window.SetFont("norm s10 q5 c000000", "Segoe UI")
         Window.Add("Text",, "Selections: nerfpistol nerfrevolver pistol shotgun rifle revolver flint ak sword uzi forcefield plasmapistol `nplasmashotgun sniper c4 c4buy smoke smokebuy grenade grenadebuy rpgbuy rpg`n(c4buy and rpgbuy automatically grab ten.)`n`nExample: pistol revolver shotgun c4 c4buy forcefield.")
-        EditBox := Window.Add("Edit", "w500 h21 -E0x0200 +Border +0x0200 Backgroundf3f3f3 cBlack", ConfigLine[2])
+        EditBox := Window.Add("Edit", "x20 y154 w515 h21 -E0x0200 +Border +0x0200 Backgroundf3f3f3 cBlack", ConfigLine[2])
         EditBox.Focus()
         Send("{End}")
-        Button := Window.Add("Text", "x525 y154 w80 h21 Center +Border +0x0200 Backgroundf3f3f3 cBlack", "Continue")
+        Button := Window.Add("Text", "x540 y154 w80 h21 Center +Border +0x0200 Backgroundf3f3f3 cBlack", "Continue")
     }
     if OOBE = true {
         Button.OnEvent("Click", LoadoutCheckAndPassOOBE)
@@ -336,7 +354,7 @@ NerfGUI(OOBE, *) {
         Window.Add("Text",, "One last thing...")
         Window.SetFont("norm s10 q5 cWhite", "Segoe UI")
         Window.Add("Text",, "Are you a nerf owner?")
-        ButtonYes := Window.Add("Text", "w80 h35 Center +Border +0x0200 Background202020 cWhite", "Yes")
+        ButtonYes := Window.Add("Text", "x17 y86 w80 h35 Center +Border +0x0200 Background202020 cWhite", "Yes")
         ButtonNo := Window.Add("Text", "x105 y86 w80 h35 Center +Border +0x0200 Background202020 cWhite", "No")
     } else if Theme = "Light" {
         Window.BackColor := "0xf3f3f3"
@@ -365,15 +383,15 @@ CompleteGUI() {
         DllCall("dwmapi\DwmSetWindowAttribute", "ptr", Window.Hwnd, "int", 20, "int*", 1, "int", 4)
         Window.Add("Text",, "All done!")
         Window.SetFont("norm s10 q5 cWhite", "Segoe UI")
-        Window.Add("Text",, "Thank you for using EBGM!")
-        Button := Window.Add("Text", "x15 y70 w200 h35 Center +Border +0x0200 Background202020 cWhite", "Done!")
+        Window.Add("Text",, "All your settings have been saved`nand will take effect on each startup.`nThank you for using EBGM!")
+        Button := Window.Add("Text", "x15 y100 w205 h35 Center +Border +0x0200 Background202020 cWhite", "Finish!")
     } else if Theme = "Light" {
         Window.BackColor := "0xf3f3f3"
         Window.SetFont("bold s11 q5 cBlack", "Segoe UI")
         Window.Add("Text",, "All done!")
         Window.SetFont("norm s10 q5 cBlack", "Segoe UI")
-        Window.Add("Text",, "Thank you for using EBGM!")
-        Button := Window.Add("Text", "x15 y70 w200 h35 Center +Border +0x0200 Backgroundf3f3f3 cBlack", "Done!")
+        Window.Add("Text",, "All your settings have been saved`nand will take effect on each startup.`nThank you for using EBGM!")
+        Button := Window.Add("Text", "x15 y100 w205 h35 Center +Border +0x0200 Backgroundf3f3f3 cBlack", "Finish!")
     }
     Button.OnEvent("Click", (*) => (Window.Destroy(), WriteToConfig()))
     Window.Show()
@@ -419,7 +437,8 @@ WriteToConfig() {
     ConfigFile := FileOpen(A_AppData . "\..\LocalLow" "\EBGM\Config.txt", "w")
     ConfigInformation := ConfigLine[1] "`n"
                         . ConfigLine[2] "`n"
-                        . ConfigLine[3]
+                        . ConfigLine[3] "`n"
+                        . ConfigLine[4]
     ConfigFile.Write(ConfigInformation)
     ConfigFile.Close()
 }
@@ -455,6 +474,22 @@ EnableUINav() {
     ConfigFile := FileOpen(A_AppData . "\..\Local" "\Roblox\GlobalBasicSettings_13.xml", "w")
     ConfigFile.Write(NewConfig)
     ConfigFile.Close
+}
+
+ToggleSub60Compat(Name, Pos, Menu) {
+    global ConfigLine
+    if ConfigLine[4] = "false" {
+        ConfigLine[4] := "true"
+    } else {
+        ConfigLine[4] := "false"
+    }
+    if ConfigLine[4] = "true" {
+        Menu.Check(Name)
+        WriteToConfig()
+    } else {
+        menu.Uncheck(Name)
+        WriteToConfig()
+    }
 }
 
 RestartRoblox() {
