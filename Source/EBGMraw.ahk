@@ -392,6 +392,16 @@ UIWarnGUI(OOBE, *) {
         Change := Window.Add("Text", "x15 y110 w197 h35 Center +Border +0x0200 Background202020 cWhite", "Change Setting")
         LeaveAlone := Window.Add("Text", "x218 y110 w197 h35 Center +Border +0x0200 Background202020 cWhite", "Do Nothing")
     }
+    if Theme = "Light" {
+        Window.Backcolor := "0xf3f3f3"
+        Window.SetFont("bold s11 q5 cBlack", "Segoe UI")
+        Window.Add("Text",, "Warning!")
+        Window.SetFont("norm s10 q5 cBlack", "Segoe UI")
+        Window.Add("Text",, "EBGM Requires UI Navigation to be enabled, choose approach...")
+        ChangeAndRestart := Window.Add("Text", "x15 y70 w400 h35 Center +Border +0x0200 Backgroundf3f3f3 cBlack", "Change Setting and Restart Roblox")
+        Change := Window.Add("Text", "x15 y110 w197 h35 Center +Border +0x0200 Backgroundf3f3f3 cBlack", "Change Setting")
+        LeaveAlone := Window.Add("Text", "x218 y110 w197 h35 Center +Border +0x0200 Backgroundf3f3f3 cBlack", "Do Nothing")
+    }
     if OOBE = true {
         ChangeAndRestart.OnEvent("Click", (*) => (Window.Destroy(), EnableUINav(), RestartRoblox(), HotkeyGUI(true)))
         Change.OnEvent("Click", (*) => (Window.Destroy(), EnableUINav(), HotkeyGUI(true)))
