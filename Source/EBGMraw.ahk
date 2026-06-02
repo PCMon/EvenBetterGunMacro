@@ -56,10 +56,8 @@ Main(*) { ; main macro logic
     WeaponSelectionArray := StrSplit(WeaponSelection, A_Space)
     if ConfigLine[4] = "true" {
         SleepTime := 60
-        MsgBox(SleepTime)
     } else {
         SleepTime := 30
-        MsgBox(SleepTime)
     }
     Send "\"
     Send "{LEFT}"
