@@ -3,26 +3,37 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
 Persistent
-
+Loadouts := ["pistol flint sniper nerfrevolver", "rpg shotgun plasmapistol c4"]
+LoadoutNames := ["Default", "Main"]
 global ConfigLine := ["", "", "", "false"]
 WeaponSlots := Map("nerfpistol", 1, "nerfrevolver", 2, "pistol", 3, "shotgun", 4, "rifle", 5, "revolver", 6, "flint", 7, "ak", 8, "sword", 9, "uzi", 10, "forcefield", 11, "plasmapistol", 12, "plasmashotgun", 13, "sniper", 14, "c4", 15, "c4buy", 16, "smoke", 17, "smokebuy", 18, "grenade", 19, "grenadebuy", 20, "rpgbuy", 21, "rpg", 22)
 
-Theme := RegRead("HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize", "SystemUsesLightTheme") ; get system light/darkmode preference
-if Theme = 1 {
-    Theme := "Light"
-} else if Theme = 0
-    Theme := "Dark"
+UsesLightTheme := RegRead("HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize", "SystemUsesLightTheme") ; get system light/darkmode preference
+Font := "Segoe UI"
+if UsesLightTheme = 1 {
+    UsesLightTheme := true
+    GUIBackColor := "0xf3f3f3"
+    ButtonBackColor := "0xdadada"
+    GUITextColor := "cBlack"
+} else {
+    UsesLightTheme := false
+    GUIBackColor := "0x202020"
+    ButtonBackColor := "0x2c2c2c"
+    GUITextColor := "CWhite"
+}
+Height := SizeTestGUI("Height")
 
 A_TrayMenu.Delete() ; delete default tray objects
-if Theme = "Dark" { ; enable darkmode tray if system preference matches
+if UsesLightTheme = false { ; enable darkmode tray if system preference matches
     TrayDarkMode()
 }
 
 SubMenuSettings := Menu()
 SubMenuSettings.Add("Hotkey", HotkeyGUI.Bind(false))
 SubMenuSettings.Add("Loadout", LoadoutGUI.Bind(false))
-SubMenuSettings.Add("Nerf", NerfGUI.Bind(false))
 SubMenuSettings.Add("Sub 60 Compat", ToggleSub60Compat)
+LoadoutMenu := Menu()
+
 A_TrayMenu.Add("EBGM Settings", SubMenuSettings)
 A_TrayMenu.Add()
 A_TrayMenu.Add("Fix (Clears Config)", EndApp.Bind(true))
@@ -152,41 +163,18 @@ Main(*) { ; main macro logic
     Send "\"
 }
 
-; Config
-CheckForConfig() { ; Check LocalLow for Config File
-    if FileExist(A_AppData . "\..\LocalLow" "\EBGM\Config.txt") {
-        return true
-    }
-    else {
-        return false
-    }
-}
-
-UnpackConfig() { ; Extract and Array Config Data
-    Line := StrSplit(FileRead(A_AppData . "\..\LocalLow" "\EBGM\Config.txt"), "`n", "`r")
-    return Line
-}
-
 ; GUIS
 WelcomeGUI(OOBE, *) {
-    global Theme
-    global Window := Gui("+LastFound", "EvenBetterGunMacro")
-    if Theme = "Dark" {
-        Window.BackColor := "0x202020"
-        Window.SetFont("bold s13 q5 cWhite", "Segoe UI")
-        DllCall("dwmapi\DwmSetWindowAttribute", "ptr", Window.Hwnd, "int", 20, "int*", 1, "int", 4)
-        Window.Add("Text",, "Welcome to EBGM!")
-        Window.SetFont("norm s10 q5 cWhite", "Segoe UI")
-        Window.Add("Text",, "Everything submitted here can be edited after `nthe setup by right clicking EBGM in the system tray!")
-        Button := Window.Add("Text", "x15 y89 w300 h35 Center +Border +0x0200 Background202020 cWhite", "Continue")
-    } else if Theme = "Light" {
-        Window.BackColor := "0xf3f3f3"
-        Window.SetFont("bold s13 q5 c000000", "Segoe UI")
-        Window.Add("Text",, "Welcome to EBGM!")
-        Window.SetFont("norm s10 q5 c000000", "Segoe UI")
-        Window.Add("Text",, "Everything submitted here can be edited after `nthe setup by right clicking EBGM in the system tray!")
-        Button := Window.Add("Text", "x15 y89 w300 h35 Center +Border +0x0200 Backgroundf3f3f3 cBlack", "Continue")
-    }
+    global Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
+    DllCalls()
+    Window.BackColor := GUIBackColor
+    Window.SetFont("bold s13 q5 " GUITextColor, Font)
+    Window.Add("Text",, "Welcome to EBGM!")
+    Window.SetFont("norm s10 q5 " GUITextColor, Font)
+    TextElement := Window.Add("Text",, "Everything submitted here can be edited after `nthe setup by right clicking EBGM in the system tray!")
+    TextElement.GetPos(, &TextY, &TextWidth, &TextHeight)
+    InteractableHeight := TextY + TextHeight + 10
+    Button := Window.Add("Text", "x15 y" interactableHeight " w" TextWidth " h35 Center +0x0200 Background" ButtonBackColor " " GUITextColor, "Continue")
     if CheckForUINav() {
         Button.OnEvent("Click", (*) => (Window.Destroy(), HotkeyGUI(true)))
     } else if !CheckForUINav() {
@@ -202,44 +190,38 @@ WelcomeGUI(OOBE, *) {
 HotkeyGUI(OOBE, *) {
     Prevkey := ConfigLine[1]
     try Hotkey(Prevkey, "Off")
-    global Window := Gui("+LastFound", "EvenBetterGunMacro")
-    if Theme = "Dark" {
-        Window.BackColor := "0x202020"
-        Window.SetFont("bold s13 q5 cWhite", "Segoe UI")
-        DllCall("dwmapi\DwmSetWindowAttribute", "ptr", Window.Hwnd, "int", 20, "int*", 1, "int", 4)
-        Window.Add("Text",, "Please enter a hotkey:")
-        Window.SetFont("norm s10 q5 cWhite", "Segoe UI")
-        Window.Add("Text",, "You can make modifiers with characters such as:`n#(Win),  !(Alt),  ^(Ctrl),  +(Shift).")
-        Window.Add("Link", "x225 y13", '<a href="https://www.autohotkey.com/docs/v2/KeyList.htm">Valid Hotkeys.</a>')
-        EditBox := Window.Add("Edit", "x20 y100 w70 h21 Center -E0x0200 +Border +0x0200 Background202020 cWhite", ConfigLine[1])
-        EditBox.Focus()
-        Send("{End}")
-        Button := Window.Add("Text", "x95 y100 w80 h21 Center +Border +0x0200 Background202020 cWhite", "Continue")
-    } else if Theme = "Light" {
-        Window.BackColor := "0xf3f3f3"
-        Window.SetFont("bold s13 q5 c000000", "Segoe UI")
-        Window.Add("Text",, "Please enter a hotkey:")
-        Window.SetFont("norm s10 q5 c000000", "Segoe UI")
-        Window.Add("Text",, "You can make modifiers with characters such as:`n#(Win),  !(Alt),  ^(Ctrl),  +(Shift).")
-        Window.Add("Link", "x225 y13", '<a href="https://www.autohotkey.com/docs/v2/KeyList.htm">Valid Hotkeys.</a>')
-        EditBox := Window.Add("Edit", "x20 y100 w70 h21 Center -E0x0200 +Border +0x0200 Backgroundf3f3f3 cBlack", ConfigLine[1])
-        EditBox.Focus()
-        Send("{End}")
-        Button := Window.Add("Text", "x95 y100 w65 h21 Center +Border +0x0200 Backgroundf3f3f3 cBlack", "Continue")
-    }
+    global Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
+    DllCalls()
+    Window.BackColor := GUIBackColor
+    Window.SetFont("bold s13 q5 " GUITextColor, Font)
+    Window.Add("Text",, "Please enter a hotkey:")
+    Window.SetFont("norm s10 q5 " GUITextColor, Font)
+    Text := Window.Add("Text",, "You can make modifiers with characters such as:`n#(Win),  !(Alt),  ^(Ctrl),  +(Shift).")
+    Text.GetPos(, &TextY, , &TextHeight)
+    InteractableHeight := TextY + TextHeight + 15
+    Window.GetPos(, , &WindowWidth)
+    Window.Add("Link", "x" WindowWidth + 215 " y13", '<a href="https://www.autohotkey.com/docs/v2/KeyList.htm">Valid Hotkeys.</a>')
+    EditBox := Window.Add("Edit", "x20 y" InteractableHeight " w70 h" Height + 4 " Center -E0x0200 +0x0200 Background" ButtonBackColor " " GUITextColor, ConfigLine[1])
+    EditBox.Focus()
+    Send("{End}")
+    Button := Window.Add("Text", "x100 y" InteractableHeight " w80 h" Height + 4 " Center +0x0200 Background" ButtonBackColor " " GUITextColor, "Continue")
     if OOBE = true {
         Button.OnEvent("Click", HotkeyCheckAndPassOOBE)
+        invalidHotkey := false
         HotkeyCheckAndPassOOBE(*) {
             try {
                 Hotkey(EditBox.Value, (*) => "")
+            } catch Error {
+                invalidHotkey := true
+                Window.Destroy()
+                CustomGUI("Please enter a valid hotkey.", true, "Ok")
+                HotkeyGUI(true)
+            }
+            if invalidHotkey = false {
                 ConfigLine[1] := EditBox.Value
                 Window.Destroy()
                 LoadoutGUI(true)
                 Hotkey(ConfigLine[1], Main)
-            } catch Error {
-                MsgBox("Please enter a valid hotkey.")
-                Window.Destroy()
-                HotkeyGUI(true)
             }
         }
     } else if OOBE = false {
@@ -250,8 +232,8 @@ HotkeyGUI(OOBE, *) {
                 Hotkey(EditBox.Value, (*) => "")
             } catch Error {
                 invalidHotkey := true
-                MsgBox("Please enter a valid hotkey.")
                 Window.Destroy()
+                CustomGUI("Please enter a valid hotkey.", true, "Ok")
                 HotkeyGUI(false)
             }
             if invalidHotkey = false {
@@ -265,159 +247,123 @@ HotkeyGUI(OOBE, *) {
     Window.Show()
 }
 
-LoadoutGUI(OOBE, *) {
-    global Window := Gui("+LastFound", "EvenBetterGunMacro")
-    if Theme = "Dark" {
-        Window.BackColor := "0x202020"
-        Window.SetFont("bold s15 q5 cWhite", "Segoe UI")
-        DllCall("dwmapi\DwmSetWindowAttribute", "ptr", Window.Hwnd, "int", 20, "int*", 1, "int", 4)
-        Window.Add("Text",, "Please enter your loadout:")
-        Window.SetFont("norm s10 q5 cWhite", "Segoe UI")
-        Window.Add("Text",, "Selections: nerfpistol nerfrevolver pistol shotgun rifle revolver flint ak sword uzi forcefield plasmapistol `nplasmashotgun sniper c4 c4buy smoke smokebuy grenade grenadebuy rpgbuy rpg`n(c4buy and rpgbuy automatically grab ten.)`n`nExample: pistol revolver shotgun c4 c4buy forcefield.")
-        EditBox := Window.Add("Edit", "x20 y154 w515 h21 -E0x0200 +Border +0x0200 Background202020 cWhite", ConfigLine[2])
-        EditBox.Focus()
-        Send("{End}")
-        Button := Window.Add("Text", "x540 y154 w80 h21 Center +Border +0x0200 Background202020 cWhite", "Continue")
-    } else if Theme = "Light" {
-        Window.BackColor := "0xf3f3f3"
-        Window.SetFont("bold s15 q5 c000000", "Segoe UI")
-        Window.Add("Text",, "Please enter your loadout:")
-        Window.SetFont("norm s10 q5 c000000", "Segoe UI")
-        Window.Add("Text",, "Selections: nerfpistol nerfrevolver pistol shotgun rifle revolver flint ak sword uzi forcefield plasmapistol `nplasmashotgun sniper c4 c4buy smoke smokebuy grenade grenadebuy rpgbuy rpg`n(c4buy and rpgbuy automatically grab ten.)`n`nExample: pistol revolver shotgun c4 c4buy forcefield.")
-        EditBox := Window.Add("Edit", "x20 y154 w515 h21 -E0x0200 +Border +0x0200 Backgroundf3f3f3 cBlack", ConfigLine[2])
-        EditBox.Focus()
-        Send("{End}")
-        Button := Window.Add("Text", "x540 y154 w80 h21 Center +Border +0x0200 Backgroundf3f3f3 cBlack", "Continue")
-    }
-    if OOBE = true {
-        Button.OnEvent("Click", LoadoutCheckAndPassOOBE)
-        LoadoutCheckAndPassOOBE(*) {
-            invalidWeapon := false
-            if EditBox.Value = "" {
-                invalidWeapon := true
-            }
-            WeaponSelection := EditBox.Value
-            WeaponSelectionArray := StrSplit(WeaponSelection, A_Space)
-            for Weapon in WeaponSelectionArray {
-                if !WeaponSlots.Has(Weapon) {
-                    MsgBox("Invalid weapon name, '" Weapon "'. Please ensure your weapon's name is spelled and formatted correctly as shown on this menu.")
-                    invalidWeapon := true
-                }
-            }
-            if invalidWeapon = true {
-                ConfigLine[2] := EditBox.Value
-                Window.Destroy()
-                LoadoutGUI(true)
-            } else {
-                ConfigLine[2] := EditBox.Value
-                Window.Destroy()
-                NerfGUI(true)
-            }
-        }
-    } else if OOBE = false {
-        Button.OnEvent("Click", LoadoutCheckAndPass)
-        LoadoutCheckAndPass(*) {
-            invalidWeapon := false
-            if EditBox.Value = "" {
-                invalidWeapon := true
-            }
-            WeaponSelection := EditBox.Value
-            WeaponSelectionArray := StrSplit(WeaponSelection, A_Space)
-            for Weapon in WeaponSelectionArray {
-                if !WeaponSlots.Has(Weapon) {
-                    MsgBox("Invalid weapon name, '" Weapon "'. Please ensure your weapon's name is spelled and formatted correctly as shown on this menu.")
-                    invalidWeapon := true
-                }
-            }
-            if invalidWeapon = true {
-                ConfigLine[2] := EditBox.Value
-                Window.Destroy()
-                LoadoutGUI(false)
-            } else {
-                ConfigLine[2] := EditBox.Value
-                Window.Destroy()
-                WriteToConfig()
-            }
-        }
-    }
-    Window.Show()
+LoadoutsGUI(*) {
+    Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
+    DllCalls()
+    Window.BackColor := GUIBackColor
 }
 
-NerfGUI(OOBE, *) {
-    global Window := Gui("+LastFound", "EvenBetterGunMacro")
-    if Theme = "Dark" {
-        Window.BackColor := "0x202020"
-        Window.SetFont("bold s13 q5 cWhite", "Segoe UI")
-        DllCall("dwmapi\DwmSetWindowAttribute", "ptr", Window.Hwnd, "int", 20, "int*", 1, "int", 4)
-        Window.Add("Text",, "One last thing...")
-        Window.SetFont("norm s10 q5 cWhite", "Segoe UI")
-        Window.Add("Text",, "Are you a nerf owner?")
-        ButtonYes := Window.Add("Text", "x17 y86 w80 h35 Center +Border +0x0200 Background202020 cWhite", "Yes")
-        ButtonNo := Window.Add("Text", "x105 y86 w80 h35 Center +Border +0x0200 Background202020 cWhite", "No")
-    } else if Theme = "Light" {
-        Window.BackColor := "0xf3f3f3"
-        Window.SetFont("bold s13 q5 c000000", "Segoe UI")
-        Window.Add("Text",, "One last thing...")
-        Window.SetFont("norm s10 q5 c000000", "Segoe UI")
-        Window.Add("Text",, "Are you a nerf owner?")
-        ButtonYes := Window.Add("Text", "w80 h35 Center +Border +0x0200 Backgroundf3f3f3 cBlack", "Yes")
-        ButtonNo := Window.Add("Text", "x105 y86 w80 h35 Center +Border +0x0200 Backgroundf3f3f3 cBlack", "No")
+LoadoutGUI(OOBE, *) {
+    try {
+        if ConfigLine[3] = "true" {
+            NerfState := true
+        } else {
+            NerfState := false
+        }
+    } catch Error {
+        NerfState := false
     }
-    if OOBE = true {
-        ButtonYes.OnEvent("Click", (*) => (ConfigLine[3] := "true", Window.Destroy(), CompleteGUI()))
-        ButtonNo.OnEvent("Click", (*) => (ConfigLine[3] := "false", Window.Destroy(), CompleteGUI()))
-    } else if OOBE = false {
-        ButtonYes.OnEvent("Click", (*) => (ConfigLine[3] := "true", Window.Destroy(), WriteToConfig()))
-        ButtonNo.OnEvent("Click", (*) => (ConfigLine[3] := "false", Window.Destroy(), WriteToConfig()))
+    WeaponSelection := ConfigLine[2]
+    global Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
+    DllCalls()
+    Window.BackColor := GUIBackColor
+    Window.SetFont("bold s15 q5 " GUITextColor, Font)
+    Window.Add("Text",, "Please enter a loadout:")
+    Window.SetFont("norm s10 q5 " GUITextColor, Font)
+    Window.Add("Text",, "Selections: nerfpistol nerfrevolver pistol shotgun rifle revolver flint ak sword uzi forcefield plasmapistol `nplasmashotgun sniper c4 c4buy smoke smokebuy grenade grenadebuy rpgbuy rpg`n(c4buy and rpgbuy automatically grab ten.)`n`nExample: pistol revolver shotgun c4 c4buy forcefield.")
+    EditBox := Window.Add("Edit", "x20 y154 w512 h" Height + 4 " -E0x0200 +0x0200 Background" ButtonBackColor " " GUITextColor, WeaponSelection)
+    EditBox.Focus()
+    Send("{End}")
+    Button := Window.Add("Text", "x540 y154 w80 h" Height + 4 " h" Height + 4 " Center +0x0200 Background" ButtonBackColor " " GUITextColor, "Continue")
+    Button.GetPos(&ButtonX,&ButtonY,&ButtonWidth,&ButtonHeight)
+    Window.Add("Text", "x" (ButtonX + ButtonWidth) - 55 " y" (ButtonY - ButtonHeight) - 8 " Center +0x0200 " GUITextColor, "Nerf? ")
+    if NerfState {
+        NerfButton := Window.Add("Text", "x" (ButtonX + ButtonWidth) - 17 " y" (ButtonY - ButtonHeight) - 8 " w17 h17 Center +0x0200 Background" ButtonBackColor " " GUITextColor, "✓")
+    } else if !NerfState {
+        NerfButton := Window.Add("Text", "x" (ButtonX + ButtonWidth) - 17 " y" (ButtonY - ButtonHeight) - 8 " w17 h17 Center +0x0200 Background" ButtonBackColor " " GUITextColor, "")
+    }
+    Button.OnEvent("Click", LoadoutCheckAndPassOOBE)
+    NerfButton.OnEvent("Click", ToggleNerf)
+    ToggleNerf(*) {
+        NerfState := !NerfState
+        if NerfState {
+            NerfButton.Text := "✓"
+        } else {
+            NerfButton.Text := ""
+        }
+    }
+    LoadoutCheckAndPassOOBE(*) {
+        invalidWeapon := false
+        invalidWeaponList := "" 
+        if NerfState {
+            ConfigLine[3] := "true"
+        } else {
+            ConfigLine[3] := "false"
+        }
+        if EditBox.Value = "" {
+            invalidWeapon := true
+        }
+        WeaponSelection := EditBox.Value
+        WeaponSelection := RegExReplace(WeaponSelection, " +", " ")
+        WeaponSelection := Trim(WeaponSelection, " ")
+        WeaponSelectionArray := StrSplit(WeaponSelection, A_Space)
+        if WeaponSelection != "" {
+            for Weapon in WeaponSelectionArray {
+                if !WeaponSlots.Has(Weapon) {
+                    invalidWeaponList := invalidWeaponList ", " Weapon
+                    invalidWeapon := true
+                }
+            }
+            if invalidWeapon = true {
+                Window.Destroy()
+                invalidWeaponList := SubStr(invalidWeaponList, 3)
+                CustomGUI("Invalid weapon name(s) '" invalidWeaponList "'. `nPlease ensure your weapon's name is`nspelled and formatted correctly as shown on this menu.", true, "Ok")
+                LoadoutGUI(OOBE)
+            } else {
+                ConfigLine[2] := WeaponSelection
+                Window.Destroy()
+                if OOBE {
+                    CompleteGUI()
+                } else {
+                    WriteToConfig()
+                }
+            }
+        } else {
+            Window.Destroy()
+            CustomGUI("Please enter a loadout.", true, "Ok")
+            LoadoutGUI(OOBE)
+        }
     }
     Window.Show()
 }
 
 CompleteGUI() {
-    global Window := Gui("+LastFound", "EvenBetterGunMacro")
-    if Theme = "Dark" {
-        Window.BackColor := "0x202020"
-        Window.SetFont("bold s11 q5 cWhite", "Segoe UI")
-        DllCall("dwmapi\DwmSetWindowAttribute", "ptr", Window.Hwnd, "int", 20, "int*", 1, "int", 4)
-        Window.Add("Text",, "All done!")
-        Window.SetFont("norm s10 q5 cWhite", "Segoe UI")
-        Window.Add("Text",, "All your settings have been saved`nand will take effect on each startup.`nThank you for using EBGM!")
-        Button := Window.Add("Text", "x15 y100 w205 h35 Center +Border +0x0200 Background202020 cWhite", "Finish!")
-    } else if Theme = "Light" {
-        Window.BackColor := "0xf3f3f3"
-        Window.SetFont("bold s11 q5 cBlack", "Segoe UI")
-        Window.Add("Text",, "All done!")
-        Window.SetFont("norm s10 q5 cBlack", "Segoe UI")
-        Window.Add("Text",, "All your settings have been saved`nand will take effect on each startup.`nThank you for using EBGM!")
-        Button := Window.Add("Text", "x15 y100 w205 h35 Center +Border +0x0200 Backgroundf3f3f3 cBlack", "Finish!")
-    }
+    global Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
+    DllCalls()
+    Window.BackColor := GUIBackColor
+    Window.SetFont("bold s11 q5 " GUITextColor, Font)
+    BigText := Window.Add("Text",, "All done!")
+    BigText.GetPos(&BigTextX,,,&BigTextHeight)
+    Window.SetFont("norm s10 q5 " GUITextColor, Font)
+    Text := Window.Add("Text", "x" BigTextX " y" BigTextHeight + 20, "Your settings will be saved and`nwill take effect on each startup.`nThank you for using EBGM!")
+    Text.GetPos(, &TextY, &TextWidth, &TextHeight)
+    InteractableHeight := TextY + TextHeight + 5
+    Button := Window.Add("Text", "x15 y" InteractableHeight " w" TextWidth " h35 Center +0x0200 Background" ButtonBackColor " " GUITextColor, "Finish!")
     Button.OnEvent("Click", (*) => (Window.Destroy(), WriteToConfig()))
     Window.Show()
 }
 
 UIWarnGUI(OOBE, *) {
-    global Window := Gui("+LastFound", "EvenBetterGunMacro")
-    if Theme = "Dark" {
-        Window.Backcolor := "0x202020"
-        Window.SetFont("bold s11 q5 cWhite", "Segoe UI")
-        DllCall("dwmapi\DwmSetWindowAttribute", "ptr", Window.Hwnd, "int", 20, "int*", 1, "int", 4)
-        Window.Add("Text",, "Warning!")
-        Window.SetFont("norm s10 q5 cWhite", "Segoe UI")
-        Window.Add("Text",, "EBGM Requires UI Navigation to be enabled, choose approach...")
-        ChangeAndRestart := Window.Add("Text", "x15 y70 w400 h35 Center +Border +0x0200 Background202020 cWhite", "Change Setting and Restart Roblox")
-        Change := Window.Add("Text", "x15 y110 w197 h35 Center +Border +0x0200 Background202020 cWhite", "Change Setting")
-        LeaveAlone := Window.Add("Text", "x218 y110 w197 h35 Center +Border +0x0200 Background202020 cWhite", "Do Nothing")
-    }
-    if Theme = "Light" {
-        Window.Backcolor := "0xf3f3f3"
-        Window.SetFont("bold s11 q5 cBlack", "Segoe UI")
-        Window.Add("Text",, "Warning!")
-        Window.SetFont("norm s10 q5 cBlack", "Segoe UI")
-        Window.Add("Text",, "EBGM Requires UI Navigation to be enabled, choose approach...")
-        ChangeAndRestart := Window.Add("Text", "x15 y70 w400 h35 Center +Border +0x0200 Backgroundf3f3f3 cBlack", "Change Setting and Restart Roblox")
-        Change := Window.Add("Text", "x15 y110 w197 h35 Center +Border +0x0200 Backgroundf3f3f3 cBlack", "Change Setting")
-        LeaveAlone := Window.Add("Text", "x218 y110 w197 h35 Center +Border +0x0200 Backgroundf3f3f3 cBlack", "Do Nothing")
-    }
+    global Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
+    DllCalls()
+    Window.Backcolor := GUIBackColor
+    Window.SetFont("bold s11 q5 " GUITextColor, Font)
+    Window.Add("Text",, "Warning!")
+    Window.SetFont("norm s10 q5 " GUITextColor, Font)
+    Window.Add("Text",, "EBGM Requires UI Navigation to be enabled, choose approach...")
+    ChangeAndRestart := Window.Add("Text", "x15 y70 w400 h35 Center +0x0200 Background" ButtonBackColor " " GUITextColor, "Change Setting and Restart Roblox")
+    Change := Window.Add("Text", "x15 y110 w197 h35 Center +0x0200 Background" ButtonBackColor " " GUITextColor, "Change Setting")
+    LeaveAlone := Window.Add("Text", "x218 y110 w197 h35 Center +0x0200 Background" ButtonBackColor " " GUITextColor, "Do Nothing")
     if OOBE = true {
         ChangeAndRestart.OnEvent("Click", (*) => (Window.Destroy(), EnableUINav(), RestartRoblox(), HotkeyGUI(true)))
         Change.OnEvent("Click", (*) => (Window.Destroy(), EnableUINav(), HotkeyGUI(true)))
@@ -430,6 +376,57 @@ UIWarnGUI(OOBE, *) {
     Window.Show()
 }
 
+CustomGUI(Text, Button, ButtonText) {
+    Global Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
+    DllCalls()
+    Window.BackColor := GUIBackColor
+    Window.SetFont("norm s10 q5 " GUITextColor, Font)
+    TextElement := Window.Add("Text",, Text)
+    if Button {
+        TextElement.GetPos(, , &TextWidth)
+        ButtonHeight := TextWidth
+        ButtonHeight := ButtonHeight / 30 + 30
+        Button := Window.Add("Text", "w" TextWidth " h" ButtonHeight " Center +0x0200 Background" ButtonBackColor " " GUITextColor, ButtonText)
+        Button.OnEvent("Click", Process)
+        Process(*) {
+            Window.Destroy()
+        }
+    }
+    Window.Show()
+    WinWaitClose("ahk_id " Window.Hwnd)
+}
+
+SizeTestGUI(Request) {
+    Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
+    Window.SetFont("norm s10 q5 " GUITextColor, Font)
+    TextHeight := Window.Add("Text", "Hidden", "Wq")
+    TextWidth := Window.Add("Text", "Hidden", "MW")
+    TextHeight.GetPos(, , , &Height)
+    TextWidth.GetPos(, , &Width)
+    if Request = "Width" {
+        Return Width
+    } else if Request = "Height" {
+        return Height
+    } else {
+        return "Unknown Request."
+    }
+}
+
+DllCalls() {
+    if !UsesLightTheme {
+        DllCall("dwmapi\DwmSetWindowAttribute", "ptr", Window.Hwnd, "int", 20, "int*", 1, "int", 4)
+        DllCall("dwmapi\DwmSetWindowAttribute", "Ptr", Window.Hwnd, "UInt", 34, "Ptr*", GUIBackColor, "UInt", 4)
+    }
+    Margins := Buffer(16)
+    NumPut("int", 0, Margins, 0)
+    NumPut("int", 0, Margins, 4)
+    NumPut("int", 0, Margins, 8)
+    NumPut("int", 0, Margins, 12)
+    DllCall("dwmapi\DwmSetWindowAttribute", "Ptr", Window.Hwnd, "UInt", 33, "Ptr*", 1, "UInt", 4)
+    DllCall("dwmapi\DwmExtendFrameIntoClientArea", "Ptr", Window.Hwnd, "Ptr", Margins)
+}
+
+; Config
 WriteToConfig() {
     DirCreate A_AppData . "\..\LocalLow" "\EBGM\"
     ConfigFile := FileOpen(A_AppData . "\..\LocalLow" "\EBGM\Config.txt", "w")
@@ -439,6 +436,20 @@ WriteToConfig() {
                         . ConfigLine[4]
     ConfigFile.Write(ConfigInformation)
     ConfigFile.Close()
+}
+
+CheckForConfig() { ; Check LocalLow for Config File
+    if FileExist(A_AppData . "\..\LocalLow" "\EBGM\Config.txt") {
+        return true
+    }
+    else {
+        return false
+    }
+}
+
+UnpackConfig() { ; Extract and Array Config Data
+    Line := StrSplit(FileRead(A_AppData . "\..\LocalLow" "\EBGM\Config.txt"), "`n", "`r")
+    return Line
 }
 
 TrayDarkMode() {
@@ -478,14 +489,12 @@ ToggleSub60Compat(Name, Pos, Menu) {
     global ConfigLine
     if ConfigLine[4] = "false" {
         ConfigLine[4] := "true"
+        Menu.Check(Name)
     } else {
         ConfigLine[4] := "false"
-    }
-    if ConfigLine[4] = "true" {
-        Menu.Check(Name)
-        WriteToConfig()
-    } else {
         menu.Uncheck(Name)
+    }
+    if FileExist(A_AppData . "\..\LocalLow" "\EBGM\Config.txt") {
         WriteToConfig()
     }
 }
