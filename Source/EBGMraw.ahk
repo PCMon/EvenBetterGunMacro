@@ -3,10 +3,9 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
 Persistent
-Loadouts := ["pistol flint sniper nerfrevolver", "rpg shotgun plasmapistol c4"]
-LoadoutNames := ["Default", "Main"]
+
 global ConfigLine := ["", "", "", "false"]
-WeaponSlots := Map("nerfpistol", 1, "nerfrevolver", 2, "pistol", 3, "shotgun", 4, "rifle", 5, "revolver", 6, "flint", 7, "ak", 8, "sword", 9, "uzi", 10, "forcefield", 11, "plasmapistol", 12, "plasmashotgun", 13, "sniper", 14, "c4", 15, "c4buy", 16, "smoke", 17, "smokebuy", 18, "grenade", 19, "grenadebuy", 20, "rpgbuy", 21, "rpg", 22)
+WeaponSlots := Map("nerfpistol", 1, "nerfrevolver", 2, "pistol", 3, "shotgun", 4, "rifle", 5, "revolver", 6, "flint", 7, "ak", 8, "sword", 9, "uzi", 10, "forcefield", 11, "plasmapistol", 12, "plasmashotgun", 13, "sniper", 14, "c4", 15, "c4buy", 16, "smoke", 17, "smokebuy", 18, "grenade", 19, "grenadebuy", 20, "rpgbuy", 21, "rpg", 22, "flashlight", 23, "binoculars", 24)
 
 UsesLightTheme := RegRead("HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize", "SystemUsesLightTheme") ; get system light/darkmode preference
 Font := "Segoe UI"
@@ -73,7 +72,8 @@ Main(*) { ; main macro logic
     Send "\"
     Send "{LEFT}"
     Send "{LEFT}"
-    Send "{RIGHT}"
+    Send "{UP}"
+    Send "{UP}"
     Send "{RIGHT}"
     Send "{RIGHT}"
     global CurrentSlot := 1
@@ -82,14 +82,20 @@ Main(*) { ; main macro logic
         if WeaponSlots.Has(Weapon) {
             global SlotDest := WeaponSlots[Weapon]
         } else {
-            MsgBox("Invalid weapon name, '" Weapon "'. Please ensure your weapon's name is spelled and formatted correctly as described in the loadout settings.")
+            MsgBox("Invalid weapon name, '" Weapon "'. Please ensure your weapon's name is spelled and formatted correctly as described in the loadout settings.") ; LEGACY WARNING (you wont experience this unless you're editing the config file manually)
         }
         if SlotDest < 15 {
             if CurrentPage != 1 {
-                Loop CurrentSlot - 14 {
+                if CurrentPage = 2 {
+                    SlotsToSubtract := 14
+                } else if CurrentPage = 3 {
+                    SlotsToSubtract := 22
+                }
+                Loop CurrentSlot - SlotsToSubtract {
                     Send "{LEFT}"
                 }
-                Send "{UP}"
+                Send "{LEFT}"
+                Send "{RIGHT}"
                 Send ("{Enter}")
                 Sleep SleepTime
                 Send "{RIGHT}"
@@ -100,10 +106,10 @@ Main(*) { ; main macro logic
                 SlotDest := SlotDest - 2
             }
             SlotsToMove := SlotDest - CurrentSlot
-            if SlotsToMove >0 {
+            if SlotsToMove > 0 {
                 global DirectionToMove := "{RIGHT}"
             }
-            if SlotsToMove <0 {
+            if SlotsToMove < 0 {
                 global DirectionToMove := "{LEFT}"
                 global SlotsToMove := Abs(SlotsToMove)
             }
@@ -115,9 +121,14 @@ Main(*) { ; main macro logic
             Send ("{Enter}")
             CurrentSlot := SlotDest
         }
-        if SlotDest > 14 {
+        if SlotDest > 14 and SlotDest < 23 {
             if CurrentPage != 2 {
-                Loop CurrentSlot {
+                if CurrentPage = 1 {
+                    SlotsToSubtract := 0
+                } else if CurrentPage = 3 {
+                    SlotsToSubtract := 22
+                }
+                Loop CurrentSlot - SlotsToSubtract {
                     Send "{LEFT}"
                 }
                 Send ("{Enter}")
@@ -127,10 +138,10 @@ Main(*) { ; main macro logic
                 CurrentSlot := 15
             }
             SlotsToMove := SlotDest - CurrentSlot
-            if SlotsToMove >0 {
+            if SlotsToMove > 0 {
                 global DirectionToMove := "{RIGHT}"
             }
-            if SlotsToMove <0 {
+            if SlotsToMove < 0 {
                 global DirectionToMove := "{LEFT}"
                 global SlotsToMove := Abs(SlotsToMove)
             }
@@ -152,9 +163,46 @@ Main(*) { ; main macro logic
             }
             CurrentSlot := SlotDest
         }
+        if SlotDest > 22 {
+            if CurrentPage != 3 {
+                if CurrentPage = 1 {
+                    SlotsToSubtract := 0
+                } else if CurrentPage = 2 {
+                    SlotsToSubtract := 14
+                }
+                Loop (CurrentSlot - SlotsToSubtract) - 1 {
+                    Send "{LEFT}"
+                }
+                Send "{DOWN}"
+                Send "{LEFT}"
+                Send ("{Enter}")
+                Sleep SleepTime
+                Send "{RIGHT}"
+                CurrentPage := 3
+                CurrentSlot := 23
+            }
+            SlotsToMove := SlotDest - CurrentSlot
+            if SlotsToMove > 0  {
+                global DirectionToMove := "{RIGHT}"
+            }
+            if SlotsToMove < 0 {
+                global DirectionToMove := "{LEFT}"
+                global SlotsToMove := Abs(SlotsToMove)
+            }
+            if SlotsToMove != 0 {
+                Loop SlotsToMove {
+                    Send DirectionToMove
+                }
+            }
+            Send ("{Enter}")
+            CurrentSlot := SlotDest
+        }
     }
     if CurrentPage = 2 {
         CurrentSlot := CurrentSlot - 14
+    }
+    if CurrentPage = 3 {
+        CurrentSlot := CurrentSlot - 22
     }
     loop CurrentSlot + 1 {
         Send "{LEFT}"
@@ -245,12 +293,6 @@ HotkeyGUI(OOBE, *) {
         }
     }
     Window.Show()
-}
-
-LoadoutsGUI(*) {
-    Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
-    DllCalls()
-    Window.BackColor := GUIBackColor
 }
 
 LoadoutGUI(OOBE, *) {
