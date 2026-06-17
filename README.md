@@ -1,8 +1,8 @@
 # EvenBetterGunMacro! (AutoHotkey v2)
 <a href="https://github.com/PCMon/EvenBetterGunMacro/releases/latest" target="_blank">Install</a> / [Compile](#compiling) and [Verify](#verifying)
-<br><sub>You can also install the latest [Beta](https://github.com/PCMon/EvenBetterGunMacro/releases/tag/v2.0-b4) for more features, though it carries a small risk of not being stable.
+<br><sub>~~You can also install the latest [Beta](https://github.com/PCMon/EvenBetterGunMacro/releases/tag/v2.0-b4) for experimental features.~~
 
-<img width="1198" height="491" alt="Screenshot 2026-06-01 020235" src="https://github.com/user-attachments/assets/f871b994-7706-4f62-9449-9880e3b7d6b6" />
+<img width="1180" height="654" alt="Screenshot 2026-06-17 003444" src="https://github.com/user-attachments/assets/5ecabe27-f59b-480c-b178-8247c93a8cd7" />
 
 ---
 
