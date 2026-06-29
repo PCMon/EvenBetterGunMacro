@@ -1,6 +1,6 @@
 # EvenBetterGunMacro! (AutoHotkey v2)
 <a href="https://github.com/PCMon/EvenBetterGunMacro/releases/latest" target="_blank">Install</a> / [Compile](#compiling) and [Verify](#verifying)
-<br><sub>~~You can also install the latest [Beta](https://github.com/PCMon/EvenBetterGunMacro/releases/tag/v2.0-b4) for experimental features.~~
+<br><sub>~~You can also install the latest [Beta](https://github.com/PCMon/EvenBetterGunMacro/releases/tag/v2.0-b4) for experimental features.~~ <sub>There is currently no beta ahead of major releases.</sub>
 
 <img width="1180" height="654" alt="Screenshot 2026-06-17 003444" src="https://github.com/user-attachments/assets/5ecabe27-f59b-480c-b178-8247c93a8cd7" />
 
@@ -18,7 +18,8 @@ Settings save, so you only need to input them once, boots without any GUI afterw
 
 <img src=https://github.com/PCMon/EvenBetterGunMacro/blob/main/gif.gif/>
 
-Works on regular servers AND crew battles, and is stable on 60fps! 
+Works on Regular, Highroller, Voicechat, AND Crew Battle servers. <br>
+Stable on 60fps by default, and even lower framerates if you enable compatibility!
 
 ---
 
@@ -36,7 +37,8 @@ Download the <a href="https://github.com/PCMon/EvenBetterGunMacro/releases/lates
    - (Optional) Set a custom icon for the program, the default for EBGM is included in the main directory. <br><br>
 4. Under `Base File (.bin, .exe)`, select v2.0.xx.
    - Choose either U32 (AutoHotkey32.exe) or U64 (AutoHotkey64.exe).
-     - Compiling with U64 may yield improved performance, but compiling with U32 will improve compatibility with older versions of windows. <br><br>
+     - Compiling with U64 may yield improved performance, but compiling with U32 will improve compatibility with older versions of windows. <br>
+     <sub>EvenBetterGunMacro uses U64 by default, and choosing U32 may affect results in the verification stage.</sub><br><br>
 5. Finally, press **Convert**.
 
 ---
