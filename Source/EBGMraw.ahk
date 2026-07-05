@@ -1,8 +1,8 @@
 ; Howdy ^-^
-version := "EBGM v2.0.0.0"
+version := "EBGM v2.1.0.0"
 
 #Requires AutoHotkey v2.0
-;@Ahk2Exe-SetVersion 2.0.0.0
+;@Ahk2Exe-SetVersion 2.1.0.0
 #SingleInstance Force
 Persistent
 
@@ -17,7 +17,7 @@ WeaponSlots := Map("nerfpistol", 1, "nerfrevolver", 2, "pistol", 3, "shotgun", 4
 
 UsesLightTheme := RegRead("HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize", "SystemUsesLightTheme") ; get system light/darkmode preference
 Font := "Segoe UI"
-if UsesLightTheme = 1 {
+if UsesLightTheme = 1 { ; set color values for GUI elements based on system preference
     UsesLightTheme := true
     GUIBackColor := "0xf3f3f3"
     ButtonBackColor := "0xdadada"
@@ -30,14 +30,14 @@ if UsesLightTheme = 1 {
     ButtonBackColorAlt := "0x3b3b3b"
     GUITextColor := "CWhite"
 }
-Height := SizeTestGUI("Height")
+Height := SizeTestGUI("Height") ; gets height of set font for window formatting
 
 A_TrayMenu.Delete() ; delete default tray objects
 if UsesLightTheme = false { ; enable darkmode tray if system preference matches
     TrayDarkMode()
 }
 
-SubMenuSettings := Menu()
+SubMenuSettings := Menu() ; assemble tray menu
 SubMenuSettings.Add("Sub 60 Compat", ToggleSub60Compat)
 
 A_TrayMenu.Add("Loadouts", LoadoutsGUI)
@@ -48,12 +48,12 @@ A_TrayMenu.Add("Exit", EndApp)
 A_TrayMenu.Add(version, DummyFunction)
 A_TrayMenu.Disable(version)
 
-if (!CheckForConfig() || !CheckForLoadouts()) {
+if (!CheckForConfig() || !CheckForLoadouts()) { ; check if config/loadout files exist do not exist, or if pre-v2 files exist, deletes and runs OOBE if so
     try FileDelete A_AppData . "\..\LocalLow" "\EBGM\Config.txt"
     try FileDelete A_AppData . "\..\LocalLow" "\EBGM\ConfigV2.txt"
     try FileDelete A_AppData . "\..\LocalLow" "\EBGM\Loadouts.txt"
     WelcomeGUI(true)
-} else {
+} else { ; if passes, unpack config and loadout files
     ConfigLine := UnpackConfig()
     LoadoutNames := UnpackLoadouts("Names")
     LoadoutHotkeys := UnpackLoadouts("Hotkeys")
@@ -74,156 +74,160 @@ if (!CheckForConfig() || !CheckForLoadouts()) {
 }
 
 Main(Weapons, Nerf, *) { ; main macro logic
-    WeaponSelectionArray := StrSplit(Weapons, A_Space)
-    if ConfigLine[1] = "true" {
-        SleepTime := 60
-    } else {
-        SleepTime := 30
-    }
-    Send "\"
-    Send "{LEFT}"
-    Send "{LEFT}"
-    Send "{UP}"
-    Send "{UP}"
-    Send "{RIGHT}"
-    Send "{RIGHT}"
-    global CurrentSlot := 1
-    global CurrentPage := 1
-    for Weapon in WeaponSelectionArray {
-        if WeaponSlots.Has(Weapon) {
-            global SlotDest := WeaponSlots[Weapon]
+    if WinActive("ahk_exe RobloxPlayerBeta.exe") {
+        WeaponSelectionArray := StrSplit(Weapons, A_Space)
+        if ConfigLine[1] = "true" {
+            SleepTime := 60
         } else {
-            MsgBox("Invalid weapon name, '" Weapon "'. Please ensure your weapon's name is spelled and formatted correctly as described in the loadout settings.") ; LEGACY WARNING (you wont experience this unless you're editing the config file manually)
+            SleepTime := 30
         }
-        if SlotDest < 15 {
-            if CurrentPage != 1 {
-                if CurrentPage = 2 {
-                    SlotsToSubtract := 14
-                } else if CurrentPage = 3 {
-                    SlotsToSubtract := 22
-                }
-                Loop CurrentSlot - SlotsToSubtract {
-                    Send "{LEFT}"
-                }
-                Send "{LEFT}"
-                Send "{RIGHT}"
-                Send ("{Enter}")
-                Sleep SleepTime
-                Send "{RIGHT}"
-                CurrentSlot := 1
-                CurrentPage := 1
-            }
-            if Nerf = "false" {
-                SlotDest := SlotDest - 2
-            }
-            SlotsToMove := SlotDest - CurrentSlot
-            if SlotsToMove > 0 {
-                global DirectionToMove := "{RIGHT}"
-            }
-            if SlotsToMove < 0 {
-                global DirectionToMove := "{LEFT}"
-                global SlotsToMove := Abs(SlotsToMove)
-            }
-            if SlotsToMove != 0 {
-                Loop SlotsToMove {
-                    Send DirectionToMove
-                }
-            }
-            Send ("{Enter}")
-            CurrentSlot := SlotDest
-        }
-        if SlotDest > 14 and SlotDest < 23 {
-            if CurrentPage != 2 {
-                if CurrentPage = 1 {
-                    SlotsToSubtract := 0
-                } else if CurrentPage = 3 {
-                    SlotsToSubtract := 22
-                }
-                Loop CurrentSlot - SlotsToSubtract {
-                    Send "{LEFT}"
-                }
-                Send ("{Enter}")
-                Sleep SleepTime
-                Send "{RIGHT}"
-                CurrentPage := 2
-                CurrentSlot := 15
-            }
-            SlotsToMove := SlotDest - CurrentSlot
-            if SlotsToMove > 0 {
-                global DirectionToMove := "{RIGHT}"
-            }
-            if SlotsToMove < 0 {
-                global DirectionToMove := "{LEFT}"
-                global SlotsToMove := Abs(SlotsToMove)
-            }
-            if SlotsToMove != 0 {
-                Loop SlotsToMove {
-                    Send DirectionToMove
-                }
-            }
-            if (Weapon = "c4buy" or Weapon = "rpgbuy" or Weapon = "grenadebuy") {
-                loop 10 {
-                    Send ("{Enter}")
-                }
-            } else if Weapon = "smokebuy" {
-                loop 3 {
-                    Send ("{Enter}")
-                }
-            } else {
-                Send ("{Enter}")
-            }
-            CurrentSlot := SlotDest
-        }
-        if SlotDest > 22 {
-            if CurrentPage != 3 {
-                if CurrentPage = 1 {
-                    SlotsToSubtract := 0
-                } else if CurrentPage = 2 {
-                    SlotsToSubtract := 14
-                }
-                Loop (CurrentSlot - SlotsToSubtract) - 1 {
-                    Send "{LEFT}"
-                }
-                Send "{DOWN}"
-                Send "{LEFT}"
-                Send ("{Enter}")
-                Sleep SleepTime
-                Send "{RIGHT}"
-                CurrentPage := 3
-                CurrentSlot := 23
-            }
-            SlotsToMove := SlotDest - CurrentSlot
-            if SlotsToMove > 0  {
-                global DirectionToMove := "{RIGHT}"
-            }
-            if SlotsToMove < 0 {
-                global DirectionToMove := "{LEFT}"
-                global SlotsToMove := Abs(SlotsToMove)
-            }
-            if SlotsToMove != 0 {
-                Loop SlotsToMove {
-                    Send DirectionToMove
-                }
-            }
-            Send ("{Enter}")
-            CurrentSlot := SlotDest
-        }
-    }
-    if CurrentPage = 2 {
-        CurrentSlot := CurrentSlot - 14
-    }
-    if CurrentPage = 3 {
-        CurrentSlot := CurrentSlot - 22
-    }
-    loop CurrentSlot + 1 {
+        Send "\"
+        Send "{DOWN}"
         Send "{LEFT}"
+        Send "{LEFT}"
+        Send "{LEFT}"
+        Send "{UP}"
+        Send "{RIGHT}"
+        Send "{RIGHT}"
+        Send "{RIGHT}"
+        CurrentSlot := 1
+        CurrentPage := 1
+        for Weapon in WeaponSelectionArray {
+            if WeaponSlots.Has(Weapon) {
+                SlotDest := WeaponSlots[Weapon]
+            } else {
+                MsgBox("Invalid weapon name, '" Weapon "'. Please ensure your weapon's name is spelled and formatted correctly as described in the loadout settings.") ; LEGACY WARNING (you wont experience this unless you're editing the config file manually)
+            }
+            if SlotDest < 15 {
+                if CurrentPage != 1 {
+                    if CurrentPage = 2 {
+                        SlotsToSubtract := 14
+                    } else if CurrentPage = 3 {
+                        SlotsToSubtract := 22
+                    }
+                    Loop CurrentSlot - SlotsToSubtract {
+                        Send "{LEFT}"
+                    }
+                    Send "{LEFT}"
+                    Send "{RIGHT}"
+                    Send ("{Enter}")
+                    Sleep SleepTime
+                    Send "{RIGHT}"
+                    CurrentSlot := 1
+                    CurrentPage := 1
+                }
+                if Nerf = "false" {
+                    SlotDest := SlotDest - 2
+                }
+                SlotsToMove := SlotDest - CurrentSlot
+                if SlotsToMove > 0 {
+                    DirectionToMove := "{RIGHT}"
+                }
+                if SlotsToMove < 0 {
+                    DirectionToMove := "{LEFT}"
+                    SlotsToMove := Abs(SlotsToMove)
+                }
+                if SlotsToMove != 0 {
+                    Loop SlotsToMove {
+                        Send DirectionToMove
+                    }
+                }
+                Send ("{Enter}")
+                CurrentSlot := SlotDest
+            }
+            if SlotDest > 14 and SlotDest < 23 {
+                if CurrentPage != 2 {
+                    if CurrentPage = 1 {
+                        SlotsToSubtract := 0
+                    } else if CurrentPage = 3 {
+                        SlotsToSubtract := 22
+                    }
+                    Loop CurrentSlot - SlotsToSubtract {
+                        Send "{LEFT}"
+                    }
+                    Send ("{Enter}")
+                    Sleep SleepTime
+                    Send "{RIGHT}"
+                    CurrentPage := 2
+                    CurrentSlot := 15
+                }
+                SlotsToMove := SlotDest - CurrentSlot
+                if SlotsToMove > 0 {
+                    DirectionToMove := "{RIGHT}"
+                }
+                if SlotsToMove < 0 {
+                    DirectionToMove := "{LEFT}"
+                    SlotsToMove := Abs(SlotsToMove)
+                }
+                if SlotsToMove != 0 {
+                    Loop SlotsToMove {
+                        Send DirectionToMove
+                    }
+                }
+                if (Weapon = "c4buy" or Weapon = "rpgbuy" or Weapon = "grenadebuy") {
+                    loop 10 {
+                        Send ("{Enter}")
+                    }
+                } else if Weapon = "smokebuy" {
+                    loop 3 {
+                        Send ("{Enter}")
+                    }
+                } else {
+                    Send ("{Enter}")
+                }
+                CurrentSlot := SlotDest
+            }
+            if SlotDest > 22 {
+                if CurrentPage != 3 {
+                    if CurrentPage = 1 {
+                        SlotsToSubtract := 0
+                    } else if CurrentPage = 2 {
+                        SlotsToSubtract := 14
+                    }
+                    Loop (CurrentSlot - SlotsToSubtract) - 1 {
+                        Send "{LEFT}"
+                    }
+                    Send "{DOWN}"
+                    Send "{LEFT}"
+                    Send ("{Enter}")
+                    Sleep SleepTime
+                    Send "{RIGHT}"
+                    CurrentPage := 3
+                    CurrentSlot := 23
+                }
+                SlotsToMove := SlotDest - CurrentSlot
+                if SlotsToMove > 0  {
+                    DirectionToMove := "{RIGHT}"
+                }
+                if SlotsToMove < 0 {
+                    DirectionToMove := "{LEFT}"
+                    SlotsToMove := Abs(SlotsToMove)
+                }
+                if SlotsToMove != 0 {
+                    Loop SlotsToMove {
+                        Send DirectionToMove
+                    }
+                }
+                Send ("{Enter}")
+                CurrentSlot := SlotDest
+            }
+        }
+        if CurrentPage = 2 {
+            CurrentSlot := CurrentSlot - 14
+        }
+        if CurrentPage = 3 {
+            CurrentSlot := CurrentSlot - 22
+        }
+        loop CurrentSlot + 1 {
+            Send "{LEFT}"
+        }
+        Send ("{Enter}")
+        Send "\"
     }
-    Send ("{Enter}")
-    Send "\"
 }
 
 ; GUIS
-WelcomeGUI(*) {
+WelcomeGUI(*) { ; welcome GUI for OOBE 
     A_TrayMenu.Disable("Loadouts")
     global Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
     DllCalls()
@@ -247,7 +251,7 @@ WelcomeGUI(*) {
     Window.Show()
 }
 
-HotkeyGUI(OOBE, Index, *) {
+HotkeyGUI(OOBE, Index, *) { ; hotkey GUI for setting a profile's hotkey
     RefreshHotkeys(false)
     global Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
     DllCalls()
@@ -304,7 +308,7 @@ HotkeyGUI(OOBE, Index, *) {
     Window.Show()
 }
 
-LoadoutGUI(OOBE, Index, *) {
+LoadoutGUI(OOBE, Index, *) { ; loadout GUI for setting a profile's loadout
     RefreshHotkeys(false)
     try {
         if LoadoutNerf[Index] = "true" {
@@ -388,7 +392,7 @@ LoadoutGUI(OOBE, Index, *) {
     Window.Show()
 }
 
-LoadoutsGUI(*) {
+LoadoutsGUI(*) { ; loadouts GUI for managing profiles
     global Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
     DllCalls()
     Window.BackColor := GUIBackColor
@@ -476,7 +480,7 @@ LoadoutsGUI(*) {
     Window.Show()
 }
 
-CompleteGUI() {
+CompleteGUI() { ; complete GUI for OOBE
     global Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
     DllCalls()
     Window.BackColor := GUIBackColor
@@ -505,7 +509,7 @@ CompleteGUI() {
     Window.Show()
 }
 
-NameGUI(Index, *) {
+NameGUI(Index, *) { ; name GUI for setting a profile's name
     global Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
     DllCalls()
     Window.BackColor := GUIBackColor
@@ -528,7 +532,7 @@ NameGUI(Index, *) {
     Window.Show()
 }
 
-UIWarnGUI(OOBE, *) {
+UIWarnGUI(OOBE, *) { ; ui warn GUI for if EBGM detects roblox UI navigation is disabled
     global Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
     DllCalls()
     Window.Backcolor := GUIBackColor
@@ -551,7 +555,7 @@ UIWarnGUI(OOBE, *) {
     Window.Show()
 }
 
-CustomGUI(Text, Button, ButtonText, ForwardDest, ForwardPar, Index) {
+CustomGUI(Text, Button, ButtonText, ForwardDest, ForwardPar, Index) { ; dynamic GUI that accepts custom inputs for info, button text, or forward destination
     Global Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
     DllCalls()
     Window.BackColor := GUIBackColor
@@ -571,7 +575,7 @@ CustomGUI(Text, Button, ButtonText, ForwardDest, ForwardPar, Index) {
     Window.Show()
 }
 
-SizeTestGUI(Request) {
+SizeTestGUI(Request) { ; invisible size test GUI to find height of the set font for GUI formatting
     Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
     Window.SetFont("norm s10 q5 " GUITextColor, Font)
     TextHeight := Window.Add("Text", "Hidden", "Wq")
@@ -585,12 +589,12 @@ SizeTestGUI(Request) {
     }
 }
 
-DllCalls() {
-    if !UsesLightTheme {
+DllCalls() { ; reusable dll calls for GUIs
+    if !UsesLightTheme { ; sets window titlebar to darkmode if system preference matches
         DllCall("dwmapi\DwmSetWindowAttribute", "ptr", Window.Hwnd, "int", 20, "int*", 1, "int", 4)
         DllCall("dwmapi\DwmSetWindowAttribute", "Ptr", Window.Hwnd, "UInt", 34, "Ptr*", GUIBackColor, "UInt", 4)
     }
-    Margins := Buffer(16)
+    Margins := Buffer(16) ; removes corners from windows for a square GUI style
     NumPut("int", 0, Margins, 0)
     NumPut("int", 0, Margins, 4)
     NumPut("int", 0, Margins, 8)
@@ -600,7 +604,7 @@ DllCalls() {
 }
 
 ; Configs
-WriteToConfig() {
+WriteToConfig() { ; writes general config data to file
     DirCreate A_AppData . "\..\LocalLow" "\EBGM\"
     ConfigFile := FileOpen(A_AppData . "\..\LocalLow" "\EBGM\ConfigV2.txt", "w")
     ConfigInformation := ConfigLine[1]
@@ -608,7 +612,7 @@ WriteToConfig() {
     ConfigFile.Close()
 }
 
-WriteToLoadout() {
+WriteToLoadout() { ; writes loadout data to file (forgive the horridly ugly formatting)
     DirCreate A_AppData . "\..\LocalLow" "\EBGM\"
     LoadoutFile := FileOpen(A_AppData . "\..\LocalLow" "\EBGM\Loadouts.txt", "w")
     for index, item in LoadoutNames {
@@ -659,7 +663,7 @@ CheckForConfig() { ; Check LocalLow for Config File
     }
 }
 
-CheckForLoadouts() { ; Check LocalLow for Config File
+CheckForLoadouts() { ; Check LocalLow for Loadouts File
     if FileExist(A_AppData . "\..\LocalLow" "\EBGM\Loadouts.txt") {
         return true
     }
@@ -692,7 +696,7 @@ DummyFunction(*) {
     ; Does nothing and dies
 }
 
-RefreshHotkeys(Apply) {
+RefreshHotkeys(Apply) { ; disables all known hotkeys and optionally re-enables active ones
     for item in HotkeyStorage {
         if item != ""
             try {
@@ -717,7 +721,7 @@ RefreshHotkeys(Apply) {
     }
 }    
 
-TrayDarkMode() {
+TrayDarkMode() { ; dll calls to set tray to darkmode 
     if (VerCompare(A_OSVersion, "10.0.17763") >= 0) {
         DWMWA_USE_IMMERSIVE_DARK_MODE := (VerCompare(A_OSVersion, "10.0.18985") >= 0) ? 20 : 19
         DllCall("dwmapi\DwmSetWindowAttribute", "Ptr", A_ScriptHwnd, "Int", DWMWA_USE_IMMERSIVE_DARK_MODE, "Int*", True, "Int", 4)
@@ -729,7 +733,7 @@ TrayDarkMode() {
     }
 }
 
-CheckForUINav() {
+CheckForUINav() { ; checks if roblox's UI navigation feature is enabled or not
     Config := StrSplit(FileRead(A_AppData . "\..\Local" "\Roblox\GlobalBasicSettings_13.xml"), "`n", "`r")
     for Line in Config {
         if InStr(Line, "UiNavigationKeyBindEnabled") {
@@ -742,7 +746,7 @@ CheckForUINav() {
     }
 }
 
-EnableUINav() {
+EnableUINav() { ; rewrites roblox's GlobalBasicSettings_13 file to enable UI navigation
     Config := FileRead(A_AppData . "\..\Local" "\Roblox\GlobalBasicSettings_13.xml")
     NewConfig := StrReplace(Config, '<bool name="UiNavigationKeyBindEnabled">false</bool>', '<bool name="UiNavigationKeyBindEnabled">true</bool>')
     ConfigFile := FileOpen(A_AppData . "\..\Local" "\Roblox\GlobalBasicSettings_13.xml", "w")
@@ -750,21 +754,21 @@ EnableUINav() {
     ConfigFile.Close
 }
 
-ToggleSub60Compat(Name, Pos, Menu) {
+ToggleSub60Compat(Name, Pos, Menu) { ; toggles sub-60fps compatibility 
     global ConfigLine
     if ConfigLine[1] = "false" {
         ConfigLine[1] := "true"
         Menu.Check(Name)
     } else {
         ConfigLine[1] := "false"
-        menu.Uncheck(Name)
+        Menu.Uncheck(Name)
     }
     if FileExist(A_AppData . "\..\LocalLow" "\EBGM\ConfigV2.txt") {
         WriteToConfig()
     }
 }
 
-RestartRoblox() {
+RestartRoblox() { ; restarts roblox
     if ProcessExist("RobloxPlayerBeta.exe") {
         ProcessClose("RobloxPlayerBeta.exe")
         ProcessWaitClose("RobloxPlayerBeta.exe", 5)
@@ -772,9 +776,12 @@ RestartRoblox() {
     Run("roblox://")
 }
 
-EndApp(DeleteConfig, *) {
+EndApp(DeleteConfig, *) { ; closes EBGM and optionally deletes config and loadout files
     if DeleteConfig = true {
-        try FileDelete A_AppData . "\..\LocalLow" "\EBGM\ConfigV2.txt"
+        try {
+            FileDelete A_AppData . "\..\LocalLow" "\EBGM\ConfigV2.txt"
+            FileDelete A_AppData . "\..\LocalLow" "\EBGM\Loadouts.txt"
+        }
         Reload()
     } else {
         ExitApp
