@@ -33,13 +33,13 @@ Download the <a href="https://github.com/PCMon/EvenBetterGunMacro/releases/lates
    - At this point you can use the raw .ahk file by launching it with AutoHotkey or continue to compile to an executable. <br><br>
 2. Right click the raw .ahk source and select `Compile Script (GUI)`. <br><br>
 3. Ensure the `Source (script file)` box has the correct location to your raw .ahk source code.
-   - (Optional) Set a destination for your compiled exe to go.
-   - (Optional) Set a custom icon for the program, the default for EBGM is included in the main directory. <br><br>
-4. Under `Base File (.bin, .exe)`, select v2.0.xx.
+   - Set a custom icon for the program, the default for EBGM is included in the main directory and is required for the verification step to work.
+   - (Optional) Set a destination for your compiled exe to go. <br><br>
+5. Under `Base File (.bin, .exe)`, select v2.0.xx.
    - Choose either U32 (AutoHotkey32.exe) or U64 (AutoHotkey64.exe).
      - Compiling with U64 may yield improved performance, but compiling with U32 will improve compatibility with older versions of windows. <br>
      <sub>EvenBetterGunMacro uses U64 by default, and choosing U32 may affect results in the verification stage.</sub><br><br>
-5. Finally, press **Convert**.
+6. Finally, press **Convert**.
 
 ---
 
