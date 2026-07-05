@@ -53,3 +53,17 @@ You can verify that the newly compiled executable from the source is the same ex
 2. Open the Windows Command Prompt or a Powershell terminal. <sub>(Administrator privilages are not required.) <br><br>
 3. Run the Windows tool `certutil` by doing `certutil -hashfile C:\Path\To\Your\Program\program.exe SHA256`. <br><br>
 4. Verify that the output SHA256 hash is identical to that which is listed beside the executable on the releases tab.
+
+## License
+
+This project is licensed under the GNU General Public License v3.0.
+
+See the LICENSE file for details.
+
+## Trademarks
+
+"EvenBetterGunMacro", "EBGM", and associated logos and artwork are not
+licensed under the GPL.
+
+See TRADEMARKS.md for the project's trademark policy.
+
