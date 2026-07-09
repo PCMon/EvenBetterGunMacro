@@ -1,8 +1,8 @@
 ; Howdy ^-^
-version := "EBGM v2.1.0.0"
+version := "EBGM v2.2.0.0"
 
 #Requires AutoHotkey v2.0
-;@Ahk2Exe-SetVersion 2.1.0.0
+;@Ahk2Exe-SetVersion 2.2.0.0
 #SingleInstance Force
 Persistent
 
@@ -13,6 +13,9 @@ global LoadoutWeapons := [""]
 global LoadoutNerf := [""]
 global LoadoutActive := ["true"]
 global HotkeyStorage := [""]
+global VehicleIDs := [""]
+global VehicleHotkeys := [""]
+global VehicleActive := [""]
 WeaponSlots := Map("nerfpistol", 1, "nerfrevolver", 2, "pistol", 3, "shotgun", 4, "rifle", 5, "revolver", 6, "flint", 7, "ak", 8, "sword", 9, "uzi", 10, "forcefield", 11, "plasmapistol", 12, "plasmashotgun", 13, "sniper", 14, "c4", 15, "c4buy", 16, "smoke", 17, "smokebuy", 18, "grenade", 19, "grenadebuy", 20, "rpgbuy", 21, "rpg", 22, "flashlight", 23, "binoculars", 24)
 
 UsesLightTheme := RegRead("HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize", "SystemUsesLightTheme") ; get system light/darkmode preference
@@ -41,6 +44,7 @@ SubMenuSettings := Menu() ; assemble tray menu
 SubMenuSettings.Add("Sub 60 Compat", ToggleSub60Compat)
 
 A_TrayMenu.Add("Loadouts", LoadoutsGUI)
+A_TrayMenu.Add("Vehicle Spawning", VehiclesGUI)
 A_TrayMenu.Add("EBGM Settings", SubMenuSettings)
 A_TrayMenu.Add()
 A_TrayMenu.Add("Fix (Clears Config)", EndApp.Bind(true))
@@ -48,10 +52,19 @@ A_TrayMenu.Add("Exit", EndApp)
 A_TrayMenu.Add(version, DummyFunction)
 A_TrayMenu.Disable(version)
 
+if !CheckForVehicles() {
+    VehicleIDs[1] := "1"
+    VehicleHotkeys[1] := "f4"
+    VehicleActive[1] := "false"
+    HotkeyStorage.Push("f4")
+    WriteToVehicles()
+}
 if (!CheckForConfig() || !CheckForLoadouts()) { ; check if config/loadout files exist do not exist, or if pre-v2 files exist, deletes and runs OOBE if so
     try FileDelete A_AppData . "\..\LocalLow" "\EBGM\Config.txt"
     try FileDelete A_AppData . "\..\LocalLow" "\EBGM\ConfigV2.txt"
     try FileDelete A_AppData . "\..\LocalLow" "\EBGM\Loadouts.txt"
+    A_TrayMenu.Disable("Loadouts")
+    A_TrayMenu.Disable("Vehicle Spawning")
     WelcomeGUI(true)
 } else { ; if passes, unpack config and loadout files
     ConfigLine := UnpackConfig()
@@ -60,8 +73,14 @@ if (!CheckForConfig() || !CheckForLoadouts()) { ; check if config/loadout files 
     LoadoutWeapons := UnpackLoadouts("Weapons")
     LoadoutNerf := UnpackLoadouts("Nerf")
     LoadoutActive := UnpackLoadouts("Active")
+    VehicleIDs := UnpackVehicles("IDs")
+    VehicleHotkeys := UnpackVehicles("Hotkeys")
+    VehicleActive := UnpackVehicles("Active")
     for index, item in LoadoutNames {
         HotkeyStorage.Push(LoadoutHotkeys[index])
+    }
+    for index, item in VehicleHotkeys {
+        HotkeyStorage.Push(VehicleHotkeys[index])
     }
     RefreshHotkeys(true)
     if !CheckForUINav() {
@@ -73,7 +92,8 @@ if (!CheckForConfig() || !CheckForLoadouts()) { ; check if config/loadout files 
     WriteToLoadout()
 }
 
-Main(Weapons, Nerf, *) { ; main macro logic
+; logic
+Main(Weapons, Nerf, *) { ; gunstore logic
     if WinActive("ahk_exe RobloxPlayerBeta.exe") {
         WeaponSelectionArray := StrSplit(Weapons, A_Space)
         if ConfigLine[1] = "true" {
@@ -226,6 +246,48 @@ Main(Weapons, Nerf, *) { ; main macro logic
     }
 }
 
+VehicleMain(CarID, *) { ; vehicle spawning logic
+    if WinActive("ahk_exe RobloxPlayerBeta.exe") {
+        CarID := Integer(CarID)
+        Send "\" ; a mess that is probably not optimized but it works with and without hotbar on normal and crewbattle servers so oh well I don't care I'm sleep deprived
+        Send "{DOWN}"
+        Send "{DOWN}"
+        Send "{DOWN}"
+        Send "{LEFT}"
+        Send "{LEFT}"
+        Send "{RIGHT}"
+        Send ("{Enter}")
+        Send "{UP}"
+        Send "{UP}"
+        Send "{UP}"
+        Send "{UP}"
+        Send "{UP}"
+        Send "{RIGHT}"
+        Send "{RIGHT}"
+        Send "{RIGHT}"
+        Send "{RIGHT}"
+        Send "{RIGHT}"
+        Send "{LEFT}"
+        Send "{UP}"
+        Send "{LEFT}"
+        Send "{LEFT}"
+        Send ("{Enter}")
+        Send "{RIGHT}"
+        Send "{RIGHT}"
+        Send "{DOWN}"
+        Row := Floor(CarID / 6)
+        Column := Abs((Mod(CarID, 6)) - 6)
+        Loop Column {
+            Send "{LEFT}"
+        }
+        Loop Row * 2 {
+            Send "{DOWN}"
+        }
+        Send ("{Enter}")
+        Send "\"
+    }
+}
+
 ; GUIS
 WelcomeGUI(*) { ; welcome GUI for OOBE 
     A_TrayMenu.Disable("Loadouts")
@@ -240,7 +302,7 @@ WelcomeGUI(*) { ; welcome GUI for OOBE
     InteractableHeight := TextY + TextHeight + 10
     Button := Window.Add("Text", "x15 y" interactableHeight " w" TextWidth " h35 Center +0x0200 Background" ButtonBackColor " " GUITextColor, "Continue")
     if CheckForUINav() {
-        Button.OnEvent("Click", (*) => (Window.Destroy(), HotkeyGUI(true, 1)))
+        Button.OnEvent("Click", (*) => (Window.Destroy(), HotkeyGUI(true, 1, false)))
     } else if !CheckForUINav() {
         Button.OnEvent("Click", WelcomeCheckAndPass)
         WelcomeCheckAndPass(*) {
@@ -251,7 +313,7 @@ WelcomeGUI(*) { ; welcome GUI for OOBE
     Window.Show()
 }
 
-HotkeyGUI(OOBE, Index, *) { ; hotkey GUI for setting a profile's hotkey
+HotkeyGUI(OOBE, Index, Vehicle, *) { ; hotkey GUI for setting a profile's hotkey
     RefreshHotkeys(false)
     global Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
     DllCalls()
@@ -264,7 +326,11 @@ HotkeyGUI(OOBE, Index, *) { ; hotkey GUI for setting a profile's hotkey
     InteractableHeight := TextY + TextHeight + 15
     Window.GetPos(, , &WindowWidth)
     Window.Add("Link", "x" WindowWidth + 215 " y13", '<a href="https://www.autohotkey.com/docs/v2/KeyList.htm">Valid Hotkeys.</a>')
-    EditBox := Window.Add("Edit", "x20 y" InteractableHeight " w70 h" Height + 4 " Center -E0x0200 +0x0200 Background" ButtonBackColor " " GUITextColor, LoadoutHotkeys[Index])
+    if Vehicle {
+        EditBox := Window.Add("Edit", "x20 y" InteractableHeight " w70 h" Height + 4 " Center -E0x0200 +0x0200 Background" ButtonBackColor " " GUITextColor, VehicleHotkeys[Index])
+    } else {
+        EditBox := Window.Add("Edit", "x20 y" InteractableHeight " w70 h" Height + 4 " Center -E0x0200 +0x0200 Background" ButtonBackColor " " GUITextColor, LoadoutHotkeys[Index])
+    }
     EditBox.Focus()
     Send("{End}")
     Button := Window.Add("Text", "x100 y" InteractableHeight " w80 h" Height + 4 " Center +0x0200 Background" ButtonBackColor " " GUITextColor, "Continue")
@@ -277,7 +343,7 @@ HotkeyGUI(OOBE, Index, *) { ; hotkey GUI for setting a profile's hotkey
             } catch Error {
                 invalidHotkey := true
                 Window.Destroy()
-                CustomGUI("Please enter a valid hotkey.", true, "Ok", HotkeyGUI, OOBE, Index)
+                CustomGUI("Please enter a valid hotkey.", true, "Ok", HotkeyGUI, OOBE, Index, Vehicle)
             }
             if invalidHotkey = false {
                 LoadoutHotkeys[1] := EditBox.Value
@@ -294,14 +360,24 @@ HotkeyGUI(OOBE, Index, *) { ; hotkey GUI for setting a profile's hotkey
             } catch Error {
                 invalidHotkey := true
                 Window.Destroy()
-                CustomGUI("Please enter a valid hotkey.", true, "Ok", HotkeyGUI, OOBE, Index)
+                CustomGUI("Please enter a valid hotkey.", true, "Ok", HotkeyGUI, OOBE, Index, Vehicle)
             }
             if invalidHotkey = false {
-                LoadoutHotkeys[Index] := EditBox.Value
-                Window.Destroy()
-                RefreshHotkeys(true)
-                WriteToLoadout()
-                LoadoutsGUI()
+                if Vehicle {
+                    VehicleHotkeys[Index] := EditBox.Value
+                    HotkeyStorage.Push(EditBox.Value)
+                    Window.Destroy()
+                    RefreshHotkeys(true)
+                    WriteToVehicles()
+                    VehiclesGUI()
+                } else {
+                    LoadoutHotkeys[Index] := EditBox.Value
+                    HotkeyStorage.Push(EditBox.Value)
+                    Window.Destroy()
+                    RefreshHotkeys(true)
+                    WriteToLoadout()
+                    LoadoutsGUI()                    
+                }
             }
         }
     }
@@ -372,7 +448,7 @@ LoadoutGUI(OOBE, Index, *) { ; loadout GUI for setting a profile's loadout
             if invalidWeapon = true {
                 Window.Destroy()
                 invalidWeaponList := SubStr(invalidWeaponList, 3)
-                CustomGUI("Invalid weapon name(s) '" invalidWeaponList "'. `nPlease ensure your weapon's name is`nspelled and formatted correctly as shown on this menu.", true, "Ok", LoadoutGUI, OOBE, Index)
+                CustomGUI("Invalid weapon name(s) '" invalidWeaponList "'. `nPlease ensure your weapon's name is`nspelled and formatted correctly as shown on this menu.", true, "Ok", LoadoutGUI, OOBE, Index, false)
             } else {
                 LoadoutWeapons[Index] := WeaponSelection
                 Window.Destroy()
@@ -386,13 +462,15 @@ LoadoutGUI(OOBE, Index, *) { ; loadout GUI for setting a profile's loadout
             }
         } else {
             Window.Destroy()
-            CustomGUI("Please enter a loadout.", true, "Ok", LoadoutGUI, OOBE, Index)
+            CustomGUI("Please enter a loadout.", true, "Ok", LoadoutGUI, OOBE, Index, false)
         }
     }
     Window.Show()
 }
 
 LoadoutsGUI(*) { ; loadouts GUI for managing profiles
+    A_TrayMenu.Disable("Loadouts")
+    A_TrayMenu.Disable("Vehicle Spawning")
     global Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
     DllCalls()
     Window.BackColor := GUIBackColor
@@ -434,7 +512,7 @@ LoadoutsGUI(*) { ; loadouts GUI for managing profiles
         Window.Add("Text", "x" BigTextX + 475 " y" (CategoryY + (index * 22)) + 2  " w75 h" Height + 4 " Center +0x0200 Background" ButtonBackColorAlt " " GUITextColor, LoadoutHotkeys[index]).OnEvent("Click", Hotkeys.Bind(Window, CurrentIndex))
         Hotkeys(Window, CurrentIndex, *) {
             Window.Destroy()
-            HotkeyGUI(false, CurrentIndex)
+            HotkeyGUI(false, CurrentIndex, false)
         }
         Window.Add("Text", "x" BigTextX + 550 " y" (CategoryY + (index * 22)) + 2 " w75 h" Height + 4 " Center +0x0200 Background" ButtonBackColor " " GUITextColor, LoadoutNerf[index])
         if LoadoutActive[CurrentIndex] = "true" {
@@ -456,7 +534,7 @@ LoadoutsGUI(*) { ; loadouts GUI for managing profiles
         }
         Delete := Window.Add("Text", "x" BigTextX + 650 " y" (CategoryY + (index * 22)) + 2 " w50" " h" Height + 4 " Center +0x0200 Background" ButtonBackColor " " GUITextColor, "Delete").OnEvent("Click", RemoveEntry.Bind(Window, CurrentIndex))
     }
-    Window.Add("Text", "x" BigTextX + 550 " w150 h25 Center +0x0200 Background" ButtonBackColor " " GUITextColor, "Close").OnEvent("Click", (*) => Window.Destroy())
+    Window.Add("Text", "x" BigTextX + 550 " w150 h25 Center +0x0200 Background" ButtonBackColor " " GUITextColor, "Close").OnEvent("Click", (*) => ExitWindow())
     RemoveEntry(Window, CurrentIndex, *) {
         if LoadoutNames.Has(2) {
             LoadoutNames.RemoveAt(CurrentIndex)
@@ -477,6 +555,97 @@ LoadoutsGUI(*) { ; loadouts GUI for managing profiles
         RefreshHotkeys(true)
         LoadoutsGUI()
     }
+    Window.OnEvent("Close", ExitWindow)
+    ExitWindow(*) {
+        A_TrayMenu.Enable("Loadouts")
+        A_TrayMenu.Enable("Vehicle Spawning")
+        Window.Destroy()
+    }
+    Window.Show()
+}
+
+VehiclesGUI(*) { ; manager GUI for vehicle spawning
+    A_TrayMenu.Disable("Loadouts")
+    A_TrayMenu.Disable("Vehicle Spawning")
+    global Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
+    DllCalls()
+    Window.BackColor := GUIBackColor
+    Window.SetFont("bold s11 q5 " GUITextColor, Font)
+    BigText := Window.Add("Text",, "Manage Vehicles:")
+    BigText.GetPos(&BigTextX,,,&BigTextHeight)
+    Window.SetFont("norm s7 q5 " GUITextColor, Font)
+    Window.Add("Text", "x145 y10", "IMPORTANT: You must have at least six vehicles `nin your favorites in order for this to work!")
+    Window.SetFont("norm s10 q5 " GUITextColor, Font)
+    IDCategory := Window.Add("Text", "x" BigTextX " y" BigTextHeight + 20 " w100 h" Height + 4 " Center +0x0200 Background" ButtonBackColorAlt " " GUITextColor, "Vehicle ID")
+    IDCategory.GetPos(&CategoryX, &CategoryY, &CategoryWidth, &CategoryHeight)
+    HotkeyCategory := Window.Add("Text", "x" BigTextX + 100 " y" BigTextHeight + 20 " w100 h" Height + 4 " Center +0x0200 Background" ButtonBackColor " " GUITextColor, "Hotkey")
+    ActiveCategory := Window.Add("Text", "x" BigTextX + 200 " y" BigTextHeight + 20 " w" Height + 4 " h" Height + 4 " Center +0x0200 Background" ButtonBackColorAlt " " GUITextColor, "*")
+    CreateVehicle := Window.Add("Text", "x" BigTextX + 225 " y" CategoryHeight + 19 " w" 79 + Height " h" Height + 4 " Center +0x0200 Background" ButtonBackColor " " GUITextColor, "+").OnEvent("Click", CreateNewVehicle)
+    CreateNewVehicle(*) {
+        VehicleIDs.Push("1")
+        VehicleHotkeys.Push("f4")
+        VehicleActive.Push("false")
+        Window.Destroy()
+        WriteToVehicles()
+        RefreshHotkeys(true)
+        VehiclesGUI()
+    }
+    for index, item in VehicleIDs {
+        CurrentIndex := index
+        Window.Add("Text", "x" BigTextX " y" (CategoryY + (index * 22)) + 2  " w100 h" Height + 4 " Center +0x0200 Background" ButtonBackColorAlt " " GUITextColor, VehicleIDs[index]).OnEvent("Click", IDs.Bind(Window, CurrentIndex))
+        IDs(Window, CurrentIndex, *) {
+            Window.Destroy()
+            IDsGUI(CurrentIndex)
+        }
+        Window.Add("Text", "x" BigTextX + 100 " y" (CategoryY + (index * 22)) + 2  " w100 h" Height + 4 " Center +0x0200 Background" ButtonBackColor " " GUITextColor, VehicleHotkeys[index]).OnEvent("Click", Hotkeys.Bind(Window, CurrentIndex))
+        Hotkeys(Window, CurrentIndex, *) {
+            Window.Destroy()
+            HotkeyGUI(false, CurrentIndex, true)
+        }
+        if VehicleActive[CurrentIndex] = "true" {
+            marker := "✓"
+        } else {
+            marker := "X"
+        }
+        Window.Add("Text", "x" BigTextX + 200 " y" (CategoryY + (index * 22)) + 2 " w" Height + 4 " h" Height + 4 " Center +0x0200 Background" ButtonBackColorAlt " " GUITextColor, marker).OnEvent("Click", ToggleVehicle.Bind(Window, CurrentIndex))
+        ToggleVehicle(Window, CurrentIndex, *) {
+            Window.Destroy()
+            if VehicleActive[CurrentIndex] = "true" {
+                VehicleActive[CurrentIndex] := "false"
+            } else if VehicleActive[CurrentIndex] = "false" {
+                VehicleActive[CurrentIndex] := "true"
+            }
+            WriteToVehicles()
+            RefreshHotkeys(true)
+            VehiclesGUI()
+        }
+        Delete := Window.Add("Text", "x" BigTextX + 225 " y" (CategoryY + (index * 22)) + 2 " w50" " h" Height + 4 " Center +0x0200 Background" ButtonBackColor " " GUITextColor, "Delete").OnEvent("Click", RemoveEntry.Bind(Window, CurrentIndex))
+        RemoveEntry(Window, CurrentIndex, *) {
+            if VehicleIDs.Has(2) {
+                VehicleIDs.RemoveAt(CurrentIndex)
+                VehicleHotkeys.RemoveAt(CurrentIndex)
+                VehicleActive.RemoveAt(CurrentIndex)
+            } else {
+                HotkeyStorage.Push("f4")
+                VehicleIDs[1] := "1"
+                VehicleHotkeys[1] := "f4"
+                VehicleActive[1] := "false"
+            }
+            WriteToVehicles()
+            Window.Destroy()
+            RefreshHotkeys(true)
+            VehiclesGUI()
+        }
+    }
+    Link := Window.Add("Link", "x15", '<a href="https://imgur.com/a/tI0Qalf">Vehicle ID Example.</a>')
+    Link.GetPos(,&Y,,)
+    Window.Add("Text", "x" BigTextX + 225 " y" Y " w" 79 + Height " h" Height + 4 " Center +0x0200 Background" ButtonBackColorAlt " " GUITextColor, "Close").OnEvent("Click", ExitWindow)
+    Window.OnEvent("Close", ExitWindow)
+    ExitWindow(*) {
+        A_TrayMenu.Enable("Loadouts")
+        A_TrayMenu.Enable("Vehicle Spawning")
+        Window.Destroy()
+    }
     Window.Show()
 }
 
@@ -496,8 +665,13 @@ CompleteGUI() { ; complete GUI for OOBE
     Complete(*) {
         Window.Destroy()
         A_TrayMenu.Enable("Loadouts")
+        A_TrayMenu.Enable("Vehicle Spawning")
         WriteToLoadout()
         WriteToConfig()
+        VehicleIDs[1] := "1"
+        VehicleHotkeys[1] := "f4"
+        VehicleActive[1] := "false"
+        WriteToVehicles()
         Hotkey(
             LoadoutHotkeys[1],
             Main.Bind(
@@ -532,6 +706,30 @@ NameGUI(Index, *) { ; name GUI for setting a profile's name
     Window.Show()
 }
 
+IDsGUI(Index, *) { ; GUI for setting a vehicle spawn ID
+    global Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
+    DllCalls()
+    Window.BackColor := GUIBackColor
+    Window.SetFont("bold s11 q5 " GUITextColor, Font)
+    BigText := Window.Add("Text", "x27", "Enter an ID:")
+    BigText.GetPos(&BigTextX,,,&BigTextHeight)
+    Window.SetFont("norm s10 q5 " GUITextColor, Font)
+    BigText.GetPos(, &BigTextY, , &BigTextHeight)
+    InteractableHeight := BigTextY + BigTextHeight + 15
+    EditBox := Window.Add("Edit", "x13 y" InteractableHeight " w75 h" Height + 4 " Center -E0x0200 +0x0200 Background" ButtonBackColor " " GUITextColor, VehicleIDs[Index])
+    EditBox.Focus()
+    Send("{End}")
+    Button := Window.Add("Text", "x93 y" InteractableHeight " w50 h" Height + 4 " Center +0x0200 Background" ButtonBackColor " " GUITextColor, "Done").OnEvent("Click", SubmitID)
+    SubmitID(*) {
+        VehicleIDs[Index] := EditBox.Value
+        Window.Destroy()
+        WriteToVehicles()
+        RefreshHotkeys(true)
+        VehiclesGUI()
+    }
+    Window.Show()
+}
+
 UIWarnGUI(OOBE, *) { ; ui warn GUI for if EBGM detects roblox UI navigation is disabled
     global Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
     DllCalls()
@@ -544,9 +742,9 @@ UIWarnGUI(OOBE, *) { ; ui warn GUI for if EBGM detects roblox UI navigation is d
     Change := Window.Add("Text", "x15 y110 w197 h35 Center +0x0200 Background" ButtonBackColor " " GUITextColor, "Change Setting")
     LeaveAlone := Window.Add("Text", "x218 y110 w197 h35 Center +0x0200 Background" ButtonBackColor " " GUITextColor, "Do Nothing")
     if OOBE = true {
-        ChangeAndRestart.OnEvent("Click", (*) => (Window.Destroy(), EnableUINav(), RestartRoblox(), HotkeyGUI(true, LoadoutHotkeys[1])))
-        Change.OnEvent("Click", (*) => (Window.Destroy(), EnableUINav(), HotkeyGUI(true, LoadoutHotkeys[1])))
-        LeaveAlone.OnEvent("Click", (*) => (Window.Destroy(), HotkeyGUI(true, LoadoutHotkeys[1])))
+        ChangeAndRestart.OnEvent("Click", (*) => (Window.Destroy(), EnableUINav(), RestartRoblox(), HotkeyGUI(true, LoadoutHotkeys[1], false)))
+        Change.OnEvent("Click", (*) => (Window.Destroy(), EnableUINav(), HotkeyGUI(true, LoadoutHotkeys[1], false)))
+        LeaveAlone.OnEvent("Click", (*) => (Window.Destroy(), HotkeyGUI(true, LoadoutHotkeys[1], false)))
     } else if OOBE = false {
         ChangeAndRestart.OnEvent("Click", (*) => (Window.Destroy(), EnableUINav(), RestartRoblox()))
         Change.OnEvent("Click", (*) => (Window.Destroy(), EnableUINav()))
@@ -555,7 +753,7 @@ UIWarnGUI(OOBE, *) { ; ui warn GUI for if EBGM detects roblox UI navigation is d
     Window.Show()
 }
 
-CustomGUI(Text, Button, ButtonText, ForwardDest, ForwardPar, Index) { ; dynamic GUI that accepts custom inputs for info, button text, or forward destination
+CustomGUI(Text, Button, ButtonText, ForwardDest, ForwardPar, Index, Vehicle) { ; dynamic GUI that accepts custom inputs for info, button text, or forward destination
     Global Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
     DllCalls()
     Window.BackColor := GUIBackColor
@@ -569,7 +767,7 @@ CustomGUI(Text, Button, ButtonText, ForwardDest, ForwardPar, Index) { ; dynamic 
         Button.OnEvent("Click", Process)
         Process(*) {
             Window.Destroy()
-            ForwardDest(ForwardPar, Index)
+            ForwardDest(ForwardPar, Index, Vehicle)
         }
     }
     Window.Show()
@@ -654,6 +852,34 @@ WriteToLoadout() { ; writes loadout data to file (forgive the horridly ugly form
     LoadoutFile.Close()
 }
 
+WriteToVehicles() { ; writes vehicle spawning data to file
+    DirCreate A_AppData . "\..\LocalLow" "\EBGM\"
+    VehiclesFile := FileOpen(A_AppData . "\..\LocalLow" "\EBGM\Vehicles.txt", "w")
+    for index, item in VehicleIDs {
+        if index > 1 {
+            IDsString .= ","
+        }
+        IDsString .= item
+    }
+    for index, item in VehicleHotkeys {
+        if index > 1 {
+            HotkeysString .= ","
+        }
+        HotkeysString .= item
+    }
+    for index, item in VehicleActive {
+        if index > 1 {
+            ActiveString .= ","
+        }
+        ActiveString .= item
+    }
+    VehiclesInformation := IDsString "`n"
+                            . HotkeysString "`n"
+                            . ActiveString "`n"
+    VehiclesFile.Write(VehiclesInformation)
+    VehiclesFile.Close()
+}
+
 CheckForConfig() { ; Check LocalLow for Config File
     if FileExist(A_AppData . "\..\LocalLow" "\EBGM\ConfigV2.txt") {
         return true
@@ -672,12 +898,21 @@ CheckForLoadouts() { ; Check LocalLow for Loadouts File
     }
 }
 
+CheckForVehicles() { ; Check LocalLow for Vehicles File
+    if FileExist(A_AppData . "\..\LocalLow" "\EBGM\Vehicles.txt") {
+        return true
+    }
+    else {
+        return false
+    }
+}
+
 UnpackConfig() { ; Extract and Array Config Data
     Line := StrSplit(FileRead(A_AppData . "\..\LocalLow" "\EBGM\ConfigV2.txt"), "`n", "`r")
     return Line
 }
 
-UnpackLoadouts(Request) { ; Extract and Array Config Data
+UnpackLoadouts(Request) { ; Extract and Array Loadouts Data
     Line := StrSplit(FileRead(A_AppData . "\..\LocalLow" "\EBGM\Loadouts.txt"), "`n", "`r")
     if Request = "Names" {
         return StrSplit(Line[1], ",")
@@ -689,6 +924,17 @@ UnpackLoadouts(Request) { ; Extract and Array Config Data
         return StrSplit(Line[4], ",")
     } else if Request = "Active" {
         return StrSplit(Line[5], ",")
+    }
+}
+
+UnpackVehicles(Request) { ; Extract and Array Vehicles Data
+    Line := StrSplit(FileRead(A_AppData . "\..\LocalLow" "\EBGM\Vehicles.txt"), "`n", "`r")
+    if Request = "IDs" {
+        return StrSplit(Line[1], ",")
+    } else if Request = "Hotkeys" {
+        return StrSplit(Line[2], ",")
+    } else if Request = "Active" {
+        return StrSplit(Line[3], ",")
     }
 }
 
@@ -716,6 +962,19 @@ RefreshHotkeys(Apply) { ; disables all known hotkeys and optionally re-enables a
                         "On"
                     )
                }
+            }
+        }
+        for index, item in VehicleActive {
+            if VehicleActive[index] = "true" {
+                try {
+                    Hotkey(
+                        VehicleHotkeys[index],
+                    VehicleMain.Bind(
+                        VehicleIDs[index]
+                    ),
+                    "On"
+                    )
+                }
             }
         }
     }
