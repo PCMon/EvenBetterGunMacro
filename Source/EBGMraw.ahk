@@ -1,12 +1,12 @@
 ; Howdy ^-^
-version := "EBGM v2.2.0.0"
+version := "EBGM v2.3.0.0"
 
 #Requires AutoHotkey v2.0
-;@Ahk2Exe-SetVersion 2.2.0.0
+;@Ahk2Exe-SetVersion 2.3.0.0
 #SingleInstance Force
 Persistent
 
-global ConfigLine := ["false"]
+global ConfigLine := ["false", "true"]
 global LoadoutNames := ["Default"]
 global LoadoutHotkeys := [""]
 global LoadoutWeapons := [""]
@@ -41,10 +41,13 @@ if UsesLightTheme = false { ; enable darkmode tray if system preference matches
 }
 
 SubMenuSettings := Menu() ; assemble tray menu
+SubMenuSettings.Add("Run on Startup", ToggleStartup)
 SubMenuSettings.Add("Sub 60 Compat", ToggleSub60Compat)
 
 A_TrayMenu.Add("Loadouts", LoadoutsGUI)
 A_TrayMenu.Add("Vehicle Spawning", VehiclesGUI)
+A_TrayMenu.Add()
+A_TrayMenu.Add("Latest Version", BringToLatestPage)
 A_TrayMenu.Add("EBGM Settings", SubMenuSettings)
 A_TrayMenu.Add()
 A_TrayMenu.Add("Fix (Clears Config)", EndApp.Bind(true))
@@ -63,11 +66,15 @@ if (!CheckForConfig() || !CheckForLoadouts()) { ; check if config/loadout files 
     try FileDelete A_AppData . "\..\LocalLow" "\EBGM\Config.txt"
     try FileDelete A_AppData . "\..\LocalLow" "\EBGM\ConfigV2.txt"
     try FileDelete A_AppData . "\..\LocalLow" "\EBGM\Loadouts.txt"
+    try FileDelete A_AppData . "\..\LocalLow" "\EBGM\Vehicles.txt"
     A_TrayMenu.Disable("Loadouts")
     A_TrayMenu.Disable("Vehicle Spawning")
     WelcomeGUI(true)
 } else { ; if passes, unpack config and loadout files
     ConfigLine := UnpackConfig()
+    if !ConfigLine.Has(2) {
+        ConfigLine.Push("true")
+    }
     LoadoutNames := UnpackLoadouts("Names")
     LoadoutHotkeys := UnpackLoadouts("Hotkeys")
     LoadoutWeapons := UnpackLoadouts("Weapons")
@@ -89,6 +96,14 @@ if (!CheckForConfig() || !CheckForLoadouts()) { ; check if config/loadout files 
     if ConfigLine[1] = "true" {
         SubMenuSettings.Check("Sub 60 Compat")
     }
+    if ConfigLine[2] = "true" {
+        SubMenuSettings.Check("Run on Startup")
+        try {
+            FileDelete A_Startup "\EBGM.lnk"
+        }
+        FileCreateShortcut(A_ScriptFullPath, A_Startup "\EBGM.lnk")
+    }
+    WriteToConfig()
     WriteToLoadout()
 }
 
@@ -721,11 +736,16 @@ IDsGUI(Index, *) { ; GUI for setting a vehicle spawn ID
     Send("{End}")
     Button := Window.Add("Text", "x93 y" InteractableHeight " w50 h" Height + 4 " Center +0x0200 Background" ButtonBackColor " " GUITextColor, "Done").OnEvent("Click", SubmitID)
     SubmitID(*) {
-        VehicleIDs[Index] := EditBox.Value
-        Window.Destroy()
-        WriteToVehicles()
-        RefreshHotkeys(true)
-        VehiclesGUI()
+        if IsDigit(EditBox.Value) {
+            VehicleIDs[Index] := EditBox.Value
+            Window.Destroy()
+            WriteToVehicles()
+            RefreshHotkeys(true)
+            VehiclesGUI()
+        } else {
+            Window.Destroy()
+            CustomGUI("Please enter a valid vehicle ID.", true, "Continue", IDsGUI, Index, false, false)
+        }
     }
     Window.Show()
 }
@@ -752,7 +772,7 @@ UIWarnGUI(OOBE, *) { ; ui warn GUI for if EBGM detects roblox UI navigation is d
     }
     Window.Show()
 }
-
+    
 CustomGUI(Text, Button, ButtonText, ForwardDest, ForwardPar, Index, Vehicle) { ; dynamic GUI that accepts custom inputs for info, button text, or forward destination
     Global Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
     DllCalls()
@@ -805,7 +825,8 @@ DllCalls() { ; reusable dll calls for GUIs
 WriteToConfig() { ; writes general config data to file
     DirCreate A_AppData . "\..\LocalLow" "\EBGM\"
     ConfigFile := FileOpen(A_AppData . "\..\LocalLow" "\EBGM\ConfigV2.txt", "w")
-    ConfigInformation := ConfigLine[1]
+    ConfigInformation := ConfigLine[1] "`n"
+                            . ConfigLine[2] "`n"
     ConfigFile.Write(ConfigInformation)
     ConfigFile.Close()
 }
@@ -942,6 +963,11 @@ DummyFunction(*) {
     ; Does nothing and dies
 }
 
+BringToLatestPage(*)
+{
+    Run("https://github.com/PCMon/EvenBetterGunMacro/releases/latest")
+}
+
 RefreshHotkeys(Apply) { ; disables all known hotkeys and optionally re-enables active ones
     for item in HotkeyStorage {
         if item != ""
@@ -1013,6 +1039,24 @@ EnableUINav() { ; rewrites roblox's GlobalBasicSettings_13 file to enable UI nav
     ConfigFile.Close
 }
 
+ToggleStartup(Name, Pos, Menu) { ; toggles run on startup
+    global ConfigLine
+    if ConfigLine[2] = "false" {
+        ConfigLine[2] := "true"
+        Menu.Check(Name)
+        FileCreateShortcut(A_ScriptFullPath, A_Startup "\EBGM.lnk")
+    } else {
+        ConfigLine[2] := "false"
+        Menu.Uncheck(Name)
+        try {
+            FileDelete A_Startup "\EBGM.lnk"
+        }
+    }
+    if FileExist(A_AppData . "\..\LocalLow" "\EBGM\ConfigV2.txt") {
+        WriteToConfig()
+    }
+}
+
 ToggleSub60Compat(Name, Pos, Menu) { ; toggles sub-60fps compatibility 
     global ConfigLine
     if ConfigLine[1] = "false" {
@@ -1040,6 +1084,7 @@ EndApp(DeleteConfig, *) { ; closes EBGM and optionally deletes config and loadou
         try {
             FileDelete A_AppData . "\..\LocalLow" "\EBGM\ConfigV2.txt"
             FileDelete A_AppData . "\..\LocalLow" "\EBGM\Loadouts.txt"
+            FileDelete A_AppData . "\..\LocalLow" "\EBGM\Vehicles.txt"
         }
         Reload()
     } else {
