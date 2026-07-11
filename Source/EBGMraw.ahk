@@ -6,7 +6,7 @@ version := "EBGM v2.3.0.0"
 #SingleInstance Force
 Persistent
 
-global ConfigLine := ["false", "true"]
+global ConfigLine := ["false", "false"]
 global LoadoutNames := ["Default"]
 global LoadoutHotkeys := [""]
 global LoadoutWeapons := [""]
@@ -69,6 +69,7 @@ if (!CheckForConfig() || !CheckForLoadouts()) { ; check if config/loadout files 
     try FileDelete A_AppData . "\..\LocalLow" "\EBGM\Vehicles.txt"
     A_TrayMenu.Disable("Loadouts")
     A_TrayMenu.Disable("Vehicle Spawning")
+    ToggleStartup("Run on Startup", "", SubMenuSettings)
     WelcomeGUI(true)
 } else { ; if passes, unpack config and loadout files
     ConfigLine := UnpackConfig()
@@ -120,9 +121,8 @@ Main(Weapons, Nerf, *) { ; gunstore logic
         Send "{DOWN}"
         Send "{LEFT}"
         Send "{LEFT}"
-        Send "{LEFT}"
-        Send "{UP}"
         Send "{RIGHT}"
+        Send "{UP}"
         Send "{RIGHT}"
         Send "{RIGHT}"
         CurrentSlot := 1
@@ -268,8 +268,9 @@ VehicleMain(CarID, *) { ; vehicle spawning logic
         Send "{DOWN}"
         Send "{DOWN}"
         Send "{DOWN}"
-        Send "{LEFT}"
-        Send "{LEFT}"
+        Loop 25 {
+            Send "{LEFT}"
+        }
         Send "{RIGHT}"
         Send ("{Enter}")
         Send "{UP}"
