@@ -1,8 +1,8 @@
 ; Howdy ^-^
-version := "EBGM v2.3.0.0"
+version := "EBGM v2.5.0.0"
 
 #Requires AutoHotkey v2.0
-;@Ahk2Exe-SetVersion 2.3.0.0
+;@Ahk2Exe-SetVersion 2.5.0.0
 #SingleInstance Force
 Persistent
 
@@ -50,7 +50,7 @@ A_TrayMenu.Add()
 A_TrayMenu.Add("Latest Version", BringToLatestPage)
 A_TrayMenu.Add("EBGM Settings", SubMenuSettings)
 A_TrayMenu.Add()
-A_TrayMenu.Add("Fix (Clears Config)", EndApp.Bind(true))
+A_TrayMenu.Add("Fix (Deletes Data)", EndApp.Bind(true))
 A_TrayMenu.Add("Exit", EndApp)
 A_TrayMenu.Add(version, DummyFunction)
 A_TrayMenu.Disable(version)
@@ -143,8 +143,7 @@ Main(Weapons, Nerf, *) { ; gunstore logic
                     Loop CurrentSlot - SlotsToSubtract {
                         Send "{LEFT}"
                     }
-                    Send "{LEFT}"
-                    Send "{RIGHT}"
+                    Send "{UP}" 
                     Send ("{Enter}")
                     Sleep SleepTime
                     Send "{RIGHT}"
@@ -417,7 +416,7 @@ LoadoutGUI(OOBE, Index, *) { ; loadout GUI for setting a profile's loadout
     Window.SetFont("bold s15 q5 " GUITextColor, Font)
     Window.Add("Text",, "Please enter a loadout:")
     Window.SetFont("norm s10 q5 " GUITextColor, Font)
-    Window.Add("Text",, "Selections: nerfpistol nerfrevolver pistol shotgun rifle revolver flint ak sword uzi forcefield plasmapistol `nplasmashotgun sniper c4 c4buy smoke smokebuy grenade grenadebuy rpgbuy rpg`n(c4buy and rpgbuy automatically grab ten.)`n`nExample: pistol revolver shotgun c4 c4buy forcefield.")
+    Window.Add("Text",, "Selections: nerfpistol nerfrevolver pistol shotgun rifle revolver flint ak sword uzi forcefield plasmapistol `nplasmashotgun sniper c4 c4buy smoke smokebuy grenade grenadebuy rpgbuy rpg flashlight binoculars`n(c4buy and rpgbuy automatically grab ten.)`n`nExample: pistol revolver shotgun c4 c4buy forcefield.")
     EditBox := Window.Add("Edit", "x20 y154 w512 h" Height + 4 " -E0x0200 +0x0200 Background" ButtonBackColor " " GUITextColor, LoadoutWeapons[Index])
     EditBox.Focus()
     Send("{End}")
