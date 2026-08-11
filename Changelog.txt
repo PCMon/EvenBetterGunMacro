@@ -99,6 +99,7 @@ v2.6
 - Added system tray object for helicopter missile autobuy.
 - Added an easier method to change text anti-aliasing in source.
 
-v2.7
+v2.6.1
 ## Fixes
 - Now checks for rocket fuel before running missile autobuy logic in order to reduce the odds of normal vehicles triggering it when sirens are enabled.
+- Updated heli autobuy inputs to work more consistently.
