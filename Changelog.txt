@@ -1,0 +1,104 @@
+v1.2
+- Initial stable release.
+
+v1.3
+## Changes
+- Restructured system tray menu.
+- Skipped welcome screen when selecting "EBGM Settings" in the system tray.
+
+v1.4
+## Changes
+- OOBE on first startup, otherwise setting GUIs do not cycle.
+- Removed default AutoHotkey v2 tray objects.
+- Created "EBGM Settings" submenu to allow for specific setting changes.
+- Added "Fix (Clears Config)" option in system tray for users experiencing issues.
+- Added "Exit" tray object to close the tool.
+- Settings now persist inside of their text fields instead of being blank.
+
+v1.5
+## Changes
+- Now closes gun store UI when macro finishes.
+- Updated menu UIs to be cleaner
+- Now has light mode, automatically applies when system theme is light mode.
+
+v1.7
+## Changes
+- New warning GUI if you have UI nav disabled, with three options on how to handle it.
+- Now checks if your hotkey and loadout are valid before continuing setup.
+- Now supports dark and light mode depending on system preference in the tray menu.
+## Fixes
+- Updated UI font and text scaling.
+- Fixed missing lightmode for the UI Nav warn GUI.
+
+v2.0
+## Changes
+- Now supports multiple loadout configs, allowing multiple to be enabled at once on different keybinds.
+- Now supports the extras category, for flashlight and binoculars.
+- Now has a toggle to allow <60 fps compatibility.
+- New custom UIs for error prompts.
+- Now completely handles spaces in loadout inputs to help avoid rejection errors.
+- Added disabled tray object for the EBGM version.
+- Removed 'loadout' and 'hotkey' tray objects.
+- Added 'loadouts' tray object and placed it above the EBGM Settings submenu.
+- Added an alternate button object color.
+- Now utilizes two separate files for data storing, ConfigV2 and Loadouts.
+- Disabled window borders and rounding.
+- Removed text button borders and gave them lighter backgrounds
+- Removed nerf owner setting GUI and added a nerf checkbox on the loadout GUI.
+- Hid minimize and maximize buttons on the titlebar.
+## Fixes
+- Possibly fixed issues with GUIs when using Windows scaling options.
+- Improved hotkey enabling and disabling in order to prevent hotkey not triggering logic under certain conditions.
+- No longer fails on 1:1 aspect ratios or higher.
+
+v2.1
+## Changes
+- Made the tray menu 'fix' option also delete the loadouts file.
+- Wrapped all main logic in a WinActive check to prevent gun store macro use outside of the roblox application.
+- Added more comments to the source code to clarify functionality.
+- New program icon.
+## Fixes
+- Edited alignment inputs to account for new UIs, previously failed when no hotbar items existed.
+
+v2.2
+## Changes
+- Added module for instant vehicle spawning.
+- Created new Vehicle Manager and Vehicle ID GUIs.
+- Altered some logic to function with new GUIs.
+## Fixes
+- Now disables "Loadouts" tray objects when the Loadouts or Vehicle Spawning GUIs are open.
+
+v2.3
+## Changes
+- Added Run on Startup setting.
+- Added tray object that opens the latest EBGM version on Github.
+- Moved 'EBGM Settings' tray object and added another divider.
+- Updates Pre-v2.3-r config files.
+## Fixes
+- Now checks if Vehicle IDs are valid before continuing.
+- Now deletes Vehicles.txt when selecting the "Fix" option.
+
+v2.4
+## Fixes
+- Redone alignment inputs for crew battle compatibility with newer UIs.
+- Now properly reflects Run on Startup status during a fresh installation.
+- Extra alignment inputs for vehicle spawning logic to prevent unintended behavior when an item near the end of the inventory was equipped.
+
+v2.5
+## Changes
+- 'Fix (Clears Config)' is now 'Fix (Deletes Data)'.
+## Fixes
+- Fixed an issue which caused the transition between second and first weapon categories to fail, resulting in a botched macro for some loadouts.
+- Added missing "flashlight" and "binoculars" text to the loadout input screen.
+- Properly updated system tray version. 
+
+v2.6
+## Changes
+- Added helicopter missile autobuy.
+- Added customizable vehicle cosmetic options to vehicle spawning.
+- Added system tray object for helicopter missile autobuy.
+- Added an easier method to change text anti-aliasing in source.
+
+v2.7
+## Fixes
+- Now checks for rocket fuel before running missile autobuy logic in order to reduce the odds of normal vehicles triggering it when sirens are enabled.
