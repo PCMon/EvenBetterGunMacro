@@ -389,10 +389,8 @@ HeliAutoBuy(*) { ; logic for the heli autobuy
                         Send "{DOWN}"
                         Send "{LEFT}"
                         Send "{UP}"
-                        Send "{UP}"
-                        Send "{UP}"
-                        Send "{UP}"
                         Send "{RIGHT}"
+                        Send "{UP}"
                         Send ("{ENTER}")
                         Send "\"
                         Hotkey("W", "Off")
