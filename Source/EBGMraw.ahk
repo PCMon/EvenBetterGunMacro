@@ -1554,7 +1554,7 @@ VehicleMain(CarID, CustomID, *) { ; vehicle spawning logic
         }
         Send ("{Enter}")
         Send "\"
-        if CustomID != 0 {
+        if CustomID != 0 { ; custom apply logic
             Sleep 750
             WinGetPos &X, &Y, &W, &H, "ahk_exe RobloxPlayerBeta.exe"
             LeftCornerX := (39 / 100) * W
