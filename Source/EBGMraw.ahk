@@ -1,8 +1,8 @@
 ; Howdy ^-^
-version := "EBGM v2.5.0.0"
+version := "EBGM v2.6.0.0"
 
 #Requires AutoHotkey v2.0
-;@Ahk2Exe-SetVersion 2.5.0.0
+;@Ahk2Exe-SetVersion 2.6.0.0
 #SingleInstance Force
 Persistent
 
@@ -16,10 +16,13 @@ global HotkeyStorage := [""]
 global VehicleIDs := [""]
 global VehicleHotkeys := [""]
 global VehicleActive := [""]
+global VehicleCustom := [""]
+global AutoBuy := "false"
 WeaponSlots := Map("nerfpistol", 1, "nerfrevolver", 2, "pistol", 3, "shotgun", 4, "rifle", 5, "revolver", 6, "flint", 7, "ak", 8, "sword", 9, "uzi", 10, "forcefield", 11, "plasmapistol", 12, "plasmashotgun", 13, "sniper", 14, "c4", 15, "c4buy", 16, "smoke", 17, "smokebuy", 18, "grenade", 19, "grenadebuy", 20, "rpgbuy", 21, "rpg", 22, "flashlight", 23, "binoculars", 24)
 
 UsesLightTheme := RegRead("HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize", "SystemUsesLightTheme") ; get system light/darkmode preference
 Font := "Segoe UI"
+TextAntiAliasing := "q5" ; q3 = disabled, q4 = standard, q5 = cleartype
 if UsesLightTheme = 1 { ; set color values for GUI elements based on system preference
     UsesLightTheme := true
     GUIBackColor := "0xf3f3f3"
@@ -46,6 +49,7 @@ SubMenuSettings.Add("Sub 60 Compat", ToggleSub60Compat)
 
 A_TrayMenu.Add("Loadouts", LoadoutsGUI)
 A_TrayMenu.Add("Vehicle Spawning", VehiclesGUI)
+A_TrayMenu.Add("Heli AutoBuy", ToggleAutoBuy)
 A_TrayMenu.Add()
 A_TrayMenu.Add("Latest Version", BringToLatestPage)
 A_TrayMenu.Add("EBGM Settings", SubMenuSettings)
@@ -59,6 +63,7 @@ if !CheckForVehicles() {
     VehicleIDs[1] := "1"
     VehicleHotkeys[1] := "f4"
     VehicleActive[1] := "false"
+    VehicleCustom[1] := "0"
     HotkeyStorage.Push("f4")
     WriteToVehicles()
 }
@@ -84,6 +89,8 @@ if (!CheckForConfig() || !CheckForLoadouts()) { ; check if config/loadout files 
     VehicleIDs := UnpackVehicles("IDs")
     VehicleHotkeys := UnpackVehicles("Hotkeys")
     VehicleActive := UnpackVehicles("Active")
+    VehicleCustom := UnpackVehicles("Custom")
+    AutoBuy := UnpackVehicles("AutoBuy")
     for index, item in LoadoutNames {
         HotkeyStorage.Push(LoadoutHotkeys[index])
     }
@@ -104,8 +111,14 @@ if (!CheckForConfig() || !CheckForLoadouts()) { ; check if config/loadout files 
         }
         FileCreateShortcut(A_ScriptFullPath, A_Startup "\EBGM.lnk")
     }
+    if AutoBuy = "true" {
+        A_TrayMenu.Check("Heli AutoBuy")
+    }
     WriteToConfig()
     WriteToLoadout()
+    WriteToVehicles()
+    Hotkey("~F", HeliAutoBuy)
+    Hotkey("~B", HeliAutoBuy)
 }
 
 ; logic
@@ -260,9 +273,10 @@ Main(Weapons, Nerf, *) { ; gunstore logic
     }
 }
 
-VehicleMain(CarID, *) { ; vehicle spawning logic
+VehicleMain(CarID, CustomID, *) { ; vehicle spawning logic
     if WinActive("ahk_exe RobloxPlayerBeta.exe") {
         CarID := Integer(CarID)
+        CustomID := Integer(CustomID)
         Send "\" ; a mess that is probably not optimized but it works with and without hotbar on normal and crewbattle servers so oh well I don't care I'm sleep deprived
         Send "{DOWN}"
         Send "{DOWN}"
@@ -300,6 +314,93 @@ VehicleMain(CarID, *) { ; vehicle spawning logic
         }
         Send ("{Enter}")
         Send "\"
+        if CustomID != 0 {
+            Sleep 750
+            WinGetPos &X, &Y, &W, &H, "ahk_exe RobloxPlayerBeta.exe"
+            LeftCornerX := (39 / 100) * W
+            LeftCornerY := (70 / 100) * H
+            RightCornerX := (61 / 100) * W
+            RightCornerY := H - 40
+            if PixelSearch(&Found1, &Found2, LeftCornerX, LeftCornerY, RightCornerX, RightCornerY, 0xD2425E, 0) {
+                Send "\"
+                Send "{DOWN}"
+                Send "{DOWN}"
+                Send "{DOWN}"
+                Loop 25 {
+                    Send "{LEFT}"
+                }
+                Send "{RIGHT}"
+                Send ("{Enter}")
+                Send "{UP}"
+                Send "{UP}"
+                Send "{DOWN}"
+                Send ("{Enter}")
+                Sleep 75
+                Send "{RIGHT}"
+                Row := Floor((CustomID - 1) / 5)
+                Column := Mod(CustomID - 1, 5)
+                Loop Column * 2 {
+                    Send "{RIGHT}"
+                }
+                Loop Row * 2 {
+                    Send "{DOWN}"
+                }
+                Send ("{Enter}")
+                Sleep 75
+                Loop 4 {
+                    Send "{UP}"
+                }
+                Send "{RIGHT}"
+                Send "{RIGHT}"
+                Send "{DOWN}"
+                Send "{DOWN}"
+                Send ("{Enter}")
+                Send "{DOWN}"
+                Send ("{Enter}")
+                Send "\"
+            }
+        }
+    }
+}
+
+HeliAutoBuy(*) { ; logic for the heli autobuy
+    if AutoBuy = "true" {
+        Sleep 500
+        if WinActive("ahk_exe RobloxPlayerBeta.exe") {
+
+            WinGetPos &X, &Y, &W, &H, "ahk_exe RobloxPlayerBeta.exe"
+            LeftCornerX := (39 / 100) * W
+            LeftCornerY := (70 / 100) * H
+            RightCornerX := (61 / 100) * W
+            RightCornerY := H - 40
+            
+            if PixelSearch(&Found1, &Found2, LeftCornerX, LeftCornerY, RightCornerX, RightCornerY, 0xD2425E, 0) {
+                if !PixelSearch(&Found3, &Found4, LeftCornerX, LeftCornerY, RightCornerX, RightCornerY, 0x832F36, 0) {
+                    Hotkey("W", DummyFunction)
+                    Hotkey("A", DummyFunction)
+                    Hotkey("S", DummyFunction)
+                    Hotkey("D", DummyFunction)
+                    Send "\"
+                    Send "F"
+                    Send "{DOWN}"
+                    Send "{DOWN}"
+                    Send "{DOWN}"
+                    Send "{DOWN}"
+                    Send "{LEFT}"
+                    Send "{UP}"
+                    Send "{UP}"
+                    Send "{UP}"
+                    Send "{UP}"
+                    Send "{RIGHT}"
+                    Send ("{ENTER}")
+                    Send "\"
+                    Hotkey("W", "Off")
+                    Hotkey("A", "Off")
+                    Hotkey("S", "Off")
+                    Hotkey("D", "Off")
+                }
+            }
+        }
     }
 }
 
@@ -309,9 +410,9 @@ WelcomeGUI(*) { ; welcome GUI for OOBE
     global Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
     DllCalls()
     Window.BackColor := GUIBackColor
-    Window.SetFont("bold s13 q5 " GUITextColor, Font)
+    Window.SetFont("bold s13 " TextAntiAliasing " " GUITextColor, Font)
     Window.Add("Text",, "Welcome to EBGM!")
-    Window.SetFont("norm s10 q5 " GUITextColor, Font)
+    Window.SetFont("norm s10 " TextAntiAliasing " " GUITextColor, Font)
     TextElement := Window.Add("Text",, "Everything submitted here can be edited after `nthe setup by right clicking EBGM in the system tray!")
     TextElement.GetPos(, &TextY, &TextWidth, &TextHeight)
     InteractableHeight := TextY + TextHeight + 10
@@ -333,9 +434,9 @@ HotkeyGUI(OOBE, Index, Vehicle, *) { ; hotkey GUI for setting a profile's hotkey
     global Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
     DllCalls()
     Window.BackColor := GUIBackColor
-    Window.SetFont("bold s13 q5 " GUITextColor, Font)
+    Window.SetFont("bold s13 " TextAntiAliasing " " GUITextColor, Font)
     Window.Add("Text",, "Please enter a hotkey:")
-    Window.SetFont("norm s10 q5 " GUITextColor, Font)
+    Window.SetFont("norm s10 " TextAntiAliasing " " GUITextColor, Font)
     Text := Window.Add("Text",, "You can make modifiers with characters such as:`n#(Win),  !(Alt),  ^(Ctrl),  +(Shift).")
     Text.GetPos(, &TextY, , &TextHeight)
     InteractableHeight := TextY + TextHeight + 15
@@ -413,9 +514,9 @@ LoadoutGUI(OOBE, Index, *) { ; loadout GUI for setting a profile's loadout
     global Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
     DllCalls()
     Window.BackColor := GUIBackColor
-    Window.SetFont("bold s15 q5 " GUITextColor, Font)
+    Window.SetFont("bold s15 " TextAntiAliasing " " GUITextColor, Font)
     Window.Add("Text",, "Please enter a loadout:")
-    Window.SetFont("norm s10 q5 " GUITextColor, Font)
+    Window.SetFont("norm s10 " TextAntiAliasing " " GUITextColor, Font)
     Window.Add("Text",, "Selections: nerfpistol nerfrevolver pistol shotgun rifle revolver flint ak sword uzi forcefield plasmapistol `nplasmashotgun sniper c4 c4buy smoke smokebuy grenade grenadebuy rpgbuy rpg flashlight binoculars`n(c4buy and rpgbuy automatically grab ten.)`n`nExample: pistol revolver shotgun c4 c4buy forcefield.")
     EditBox := Window.Add("Edit", "x20 y154 w512 h" Height + 4 " -E0x0200 +0x0200 Background" ButtonBackColor " " GUITextColor, LoadoutWeapons[Index])
     EditBox.Focus()
@@ -489,10 +590,10 @@ LoadoutsGUI(*) { ; loadouts GUI for managing profiles
     global Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
     DllCalls()
     Window.BackColor := GUIBackColor
-    Window.SetFont("bold s11 q5 " GUITextColor, Font)
+    Window.SetFont("bold s11 " TextAntiAliasing " " GUITextColor, Font)
     BigText := Window.Add("Text",, "Manage Loadouts:")
     BigText.GetPos(&BigTextX,,,&BigTextHeight)
-    Window.SetFont("norm s10 q5 " GUITextColor, Font)
+    Window.SetFont("norm s10 " TextAntiAliasing " " GUITextColor, Font)
     NameCategory := Window.Add("Text", "x" BigTextX " y" BigTextHeight + 20 " w75 h" Height + 4 " Center +0x0200 Background" ButtonBackColorAlt " " GUITextColor, "Name")
     NameCategory.GetPos(&CategoryX, &CategoryY, &CategoryWidth, &CategoryHeight)
     LoadoutCategory := Window.Add("Text", "x" BigTextX + 75 " y" BigTextHeight + 20 " w400 h" Height + 4 " Center +0x0200 Background" ButtonBackColor " " GUITextColor, "Loadout")
@@ -585,21 +686,23 @@ VehiclesGUI(*) { ; manager GUI for vehicle spawning
     global Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
     DllCalls()
     Window.BackColor := GUIBackColor
-    Window.SetFont("bold s11 q5 " GUITextColor, Font)
+    Window.SetFont("bold s11 " TextAntiAliasing " " GUITextColor, Font)
     BigText := Window.Add("Text",, "Manage Vehicles:")
     BigText.GetPos(&BigTextX,,,&BigTextHeight)
-    Window.SetFont("norm s7 q5 " GUITextColor, Font)
-    Window.Add("Text", "x145 y10", "IMPORTANT: You must have at least six vehicles `nin your favorites in order for this to work!")
-    Window.SetFont("norm s10 q5 " GUITextColor, Font)
+    Window.SetFont("norm s7 " TextAntiAliasing " " GUITextColor, Font)
+    Window.Add("Text", "x160 y10", "IMPORTANT: You must have at least six vehicles `nin your favorites in order for this to work!")
+    Window.SetFont("norm s10 " TextAntiAliasing " " GUITextColor, Font)
     IDCategory := Window.Add("Text", "x" BigTextX " y" BigTextHeight + 20 " w100 h" Height + 4 " Center +0x0200 Background" ButtonBackColorAlt " " GUITextColor, "Vehicle ID")
+    CustomCategory := Window.Add("Text", "x" BigTextX + 100 " y" BigTextHeight + 20 " w100 h" Height + 4 " Center +0x0200 Background" ButtonBackColor " " GUITextColor, "Custom ID")
     IDCategory.GetPos(&CategoryX, &CategoryY, &CategoryWidth, &CategoryHeight)
-    HotkeyCategory := Window.Add("Text", "x" BigTextX + 100 " y" BigTextHeight + 20 " w100 h" Height + 4 " Center +0x0200 Background" ButtonBackColor " " GUITextColor, "Hotkey")
-    ActiveCategory := Window.Add("Text", "x" BigTextX + 200 " y" BigTextHeight + 20 " w" Height + 4 " h" Height + 4 " Center +0x0200 Background" ButtonBackColorAlt " " GUITextColor, "*")
-    CreateVehicle := Window.Add("Text", "x" BigTextX + 225 " y" CategoryHeight + 19 " w" 79 + Height " h" Height + 4 " Center +0x0200 Background" ButtonBackColor " " GUITextColor, "+").OnEvent("Click", CreateNewVehicle)
+    HotkeyCategory := Window.Add("Text", "x" BigTextX + 200 " y" BigTextHeight + 20 " w100 h" Height + 4 " Center +0x0200 Background" ButtonBackColorAlt " " GUITextColor, "Hotkey")
+    ActiveCategory := Window.Add("Text", "x" BigTextX + 300 " y" BigTextHeight + 20 " w" Height + 4 " h" Height + 4 " Center +0x0200 Background" ButtonBackColor " " GUITextColor, "*")
+    CreateVehicle := Window.Add("Text", "x" BigTextX + 325 " y" CategoryHeight + 19 " w" 79 + Height " h" Height + 4 " Center +0x0200 Background" ButtonBackColorAlt " " GUITextColor, "+").OnEvent("Click", CreateNewVehicle)
     CreateNewVehicle(*) {
         VehicleIDs.Push("1")
         VehicleHotkeys.Push("f4")
         VehicleActive.Push("false")
+        VehicleCustom.Push("0")
         Window.Destroy()
         WriteToVehicles()
         RefreshHotkeys(true)
@@ -610,9 +713,14 @@ VehiclesGUI(*) { ; manager GUI for vehicle spawning
         Window.Add("Text", "x" BigTextX " y" (CategoryY + (index * 22)) + 2  " w100 h" Height + 4 " Center +0x0200 Background" ButtonBackColorAlt " " GUITextColor, VehicleIDs[index]).OnEvent("Click", IDs.Bind(Window, CurrentIndex))
         IDs(Window, CurrentIndex, *) {
             Window.Destroy()
-            IDsGUI(CurrentIndex)
+            IDsGUI(CurrentIndex, VehicleIDs)
         }
-        Window.Add("Text", "x" BigTextX + 100 " y" (CategoryY + (index * 22)) + 2  " w100 h" Height + 4 " Center +0x0200 Background" ButtonBackColor " " GUITextColor, VehicleHotkeys[index]).OnEvent("Click", Hotkeys.Bind(Window, CurrentIndex))
+        Window.Add("Text", "x" BigTextX + 100 " y" (CategoryY + (index * 22)) + 2  " w100 h" Height + 4 " Center +0x0200 Background" ButtonBackColor " " GUITextColor, VehicleCustom[index]).OnEvent("Click", CustomID.Bind(Window, CurrentIndex))
+        CustomID(Window, CurrentIndex, *) {
+            Window.Destroy()
+            IDsGUI(CurrentIndex, VehicleCustom)
+        }
+        Window.Add("Text", "x" BigTextX + 200 " y" (CategoryY + (index * 22)) + 2  " w100 h" Height + 4 " Center +0x0200 Background" ButtonBackColorAlt " " GUITextColor, VehicleHotkeys[index]).OnEvent("Click", Hotkeys.Bind(Window, CurrentIndex))
         Hotkeys(Window, CurrentIndex, *) {
             Window.Destroy()
             HotkeyGUI(false, CurrentIndex, true)
@@ -622,7 +730,7 @@ VehiclesGUI(*) { ; manager GUI for vehicle spawning
         } else {
             marker := "X"
         }
-        Window.Add("Text", "x" BigTextX + 200 " y" (CategoryY + (index * 22)) + 2 " w" Height + 4 " h" Height + 4 " Center +0x0200 Background" ButtonBackColorAlt " " GUITextColor, marker).OnEvent("Click", ToggleVehicle.Bind(Window, CurrentIndex))
+        Window.Add("Text", "x" BigTextX + 300 " y" (CategoryY + (index * 22)) + 2 " w" Height + 4 " h" Height + 4 " Center +0x0200 Background" ButtonBackColor " " GUITextColor, marker).OnEvent("Click", ToggleVehicle.Bind(Window, CurrentIndex))
         ToggleVehicle(Window, CurrentIndex, *) {
             Window.Destroy()
             if VehicleActive[CurrentIndex] = "true" {
@@ -634,17 +742,19 @@ VehiclesGUI(*) { ; manager GUI for vehicle spawning
             RefreshHotkeys(true)
             VehiclesGUI()
         }
-        Delete := Window.Add("Text", "x" BigTextX + 225 " y" (CategoryY + (index * 22)) + 2 " w50" " h" Height + 4 " Center +0x0200 Background" ButtonBackColor " " GUITextColor, "Delete").OnEvent("Click", RemoveEntry.Bind(Window, CurrentIndex))
+        Delete := Window.Add("Text", "x" BigTextX + 325 " y" (CategoryY + (index * 22)) + 2 " w50" " h" Height + 4 " Center +0x0200 Background" ButtonBackColorAlt " " GUITextColor, "Delete").OnEvent("Click", RemoveEntry.Bind(Window, CurrentIndex))
         RemoveEntry(Window, CurrentIndex, *) {
             if VehicleIDs.Has(2) {
                 VehicleIDs.RemoveAt(CurrentIndex)
                 VehicleHotkeys.RemoveAt(CurrentIndex)
                 VehicleActive.RemoveAt(CurrentIndex)
+                VehicleCustom.RemoveAt(CurrentIndex)
             } else {
                 HotkeyStorage.Push("f4")
                 VehicleIDs[1] := "1"
                 VehicleHotkeys[1] := "f4"
                 VehicleActive[1] := "false"
+                VehicleCustom[1] := "0"
             }
             WriteToVehicles()
             Window.Destroy()
@@ -668,10 +778,10 @@ CompleteGUI() { ; complete GUI for OOBE
     global Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
     DllCalls()
     Window.BackColor := GUIBackColor
-    Window.SetFont("bold s11 q5 " GUITextColor, Font)
+    Window.SetFont("bold s11 " TextAntiAliasing " " GUITextColor, Font)
     BigText := Window.Add("Text",, "All done!")
     BigText.GetPos(&BigTextX,,,&BigTextHeight)
-    Window.SetFont("norm s10 q5 " GUITextColor, Font)
+    Window.SetFont("norm s10 " TextAntiAliasing " " GUITextColor, Font)
     Text := Window.Add("Text", "x" BigTextX " y" BigTextHeight + 20, "Your settings will be saved and`nwill take effect on each startup.`nThank you for using EBGM!")
     Text.GetPos(, &TextY, &TextWidth, &TextHeight)
     InteractableHeight := TextY + TextHeight + 5
@@ -702,10 +812,10 @@ NameGUI(Index, *) { ; name GUI for setting a profile's name
     global Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
     DllCalls()
     Window.BackColor := GUIBackColor
-    Window.SetFont("bold s11 q5 " GUITextColor, Font)
+    Window.SetFont("bold s11 " TextAntiAliasing " " GUITextColor, Font)
     BigText := Window.Add("Text", "x27", "Enter a name:")
     BigText.GetPos(&BigTextX,,,&BigTextHeight)
-    Window.SetFont("norm s10 q5 " GUITextColor, Font)
+    Window.SetFont("norm s10 " TextAntiAliasing " " GUITextColor, Font)
     BigText.GetPos(, &BigTextY, , &BigTextHeight)
     InteractableHeight := BigTextY + BigTextHeight + 15
     EditBox := Window.Add("Edit", "x13 y" InteractableHeight " w75 h" Height + 4 " Center -E0x0200 +0x0200 Background" ButtonBackColor " " GUITextColor, LoadoutNames[Index])
@@ -721,30 +831,30 @@ NameGUI(Index, *) { ; name GUI for setting a profile's name
     Window.Show()
 }
 
-IDsGUI(Index, *) { ; GUI for setting a vehicle spawn ID
+IDsGUI(Index, IDType, *) { ; GUI for setting a vehicle spawn ID
     global Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
     DllCalls()
     Window.BackColor := GUIBackColor
-    Window.SetFont("bold s11 q5 " GUITextColor, Font)
+    Window.SetFont("bold s11 " TextAntiAliasing " " GUITextColor, Font)
     BigText := Window.Add("Text", "x27", "Enter an ID:")
     BigText.GetPos(&BigTextX,,,&BigTextHeight)
-    Window.SetFont("norm s10 q5 " GUITextColor, Font)
+    Window.SetFont("norm s10 " TextAntiAliasing " " GUITextColor, Font)
     BigText.GetPos(, &BigTextY, , &BigTextHeight)
     InteractableHeight := BigTextY + BigTextHeight + 15
-    EditBox := Window.Add("Edit", "x13 y" InteractableHeight " w75 h" Height + 4 " Center -E0x0200 +0x0200 Background" ButtonBackColor " " GUITextColor, VehicleIDs[Index])
+    EditBox := Window.Add("Edit", "x13 y" InteractableHeight " w75 h" Height + 4 " Center -E0x0200 +0x0200 Background" ButtonBackColor " " GUITextColor, IDType[Index])
     EditBox.Focus()
     Send("{End}")
     Button := Window.Add("Text", "x93 y" InteractableHeight " w50 h" Height + 4 " Center +0x0200 Background" ButtonBackColor " " GUITextColor, "Done").OnEvent("Click", SubmitID)
     SubmitID(*) {
         if IsDigit(EditBox.Value) {
-            VehicleIDs[Index] := EditBox.Value
+            IDType[Index] := EditBox.Value
             Window.Destroy()
             WriteToVehicles()
             RefreshHotkeys(true)
             VehiclesGUI()
         } else {
             Window.Destroy()
-            CustomGUI("Please enter a valid vehicle ID.", true, "Continue", IDsGUI, Index, false, false)
+            CustomGUI("Please enter a valid ID.", true, "Continue", IDsGUI, Index, false, false)
         }
     }
     Window.Show()
@@ -754,9 +864,9 @@ UIWarnGUI(OOBE, *) { ; ui warn GUI for if EBGM detects roblox UI navigation is d
     global Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
     DllCalls()
     Window.Backcolor := GUIBackColor
-    Window.SetFont("bold s11 q5 " GUITextColor, Font)
+    Window.SetFont("bold s11 " TextAntiAliasing " " GUITextColor, Font)
     Window.Add("Text",, "Warning!")
-    Window.SetFont("norm s10 q5 " GUITextColor, Font)
+    Window.SetFont("norm s10 " TextAntiAliasing " " GUITextColor, Font)
     Window.Add("Text",, "EBGM Requires UI Navigation to be enabled, choose approach...")
     ChangeAndRestart := Window.Add("Text", "x15 y70 w400 h35 Center +0x0200 Background" ButtonBackColor " " GUITextColor, "Change Setting and Restart Roblox")
     Change := Window.Add("Text", "x15 y110 w197 h35 Center +0x0200 Background" ButtonBackColor " " GUITextColor, "Change Setting")
@@ -777,7 +887,7 @@ CustomGUI(Text, Button, ButtonText, ForwardDest, ForwardPar, Index, Vehicle) { ;
     Global Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
     DllCalls()
     Window.BackColor := GUIBackColor
-    Window.SetFont("norm s10 q5 " GUITextColor, Font)
+    Window.SetFont("norm s10 " TextAntiAliasing " " GUITextColor, Font)
     TextElement := Window.Add("Text",, Text)
     if Button {
         TextElement.GetPos(, , &TextWidth)
@@ -795,7 +905,7 @@ CustomGUI(Text, Button, ButtonText, ForwardDest, ForwardPar, Index, Vehicle) { ;
 
 SizeTestGUI(Request) { ; invisible size test GUI to find height of the set font for GUI formatting
     Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
-    Window.SetFont("norm s10 q5 " GUITextColor, Font)
+    Window.SetFont("norm s10 " TextAntiAliasing " " GUITextColor, Font)
     TextHeight := Window.Add("Text", "Hidden", "Wq")
     TextWidth := Window.Add("Text", "Hidden", "MW")
     TextHeight.GetPos(, , , &Height)
@@ -894,9 +1004,17 @@ WriteToVehicles() { ; writes vehicle spawning data to file
         }
         ActiveString .= item
     }
+    for index, item in VehicleCustom {
+        if index > 1 {
+            CustomString .= ","
+        }
+        CustomString .= item
+    }
     VehiclesInformation := IDsString "`n"
                             . HotkeysString "`n"
                             . ActiveString "`n"
+                            . CustomString "`n"
+                            . AutoBuy "`n"
     VehiclesFile.Write(VehiclesInformation)
     VehiclesFile.Close()
 }
@@ -950,12 +1068,23 @@ UnpackLoadouts(Request) { ; Extract and Array Loadouts Data
 
 UnpackVehicles(Request) { ; Extract and Array Vehicles Data
     Line := StrSplit(FileRead(A_AppData . "\..\LocalLow" "\EBGM\Vehicles.txt"), "`n", "`r")
-    if Request = "IDs" {
-        return StrSplit(Line[1], ",")
-    } else if Request = "Hotkeys" {
-        return StrSplit(Line[2], ",")
-    } else if Request = "Active" {
-        return StrSplit(Line[3], ",")
+    try {
+        if Request = "IDs" {
+            return StrSplit(Line[1], ",")
+        } else if Request = "Hotkeys" {
+            return StrSplit(Line[2], ",")
+        } else if Request = "Active" {
+            return StrSplit(Line[3], ",")
+        } else if Request = "Custom" {
+            return StrSplit(Line[4], ",")
+        } else if Request = "AutoBuy" {
+            return Line[5]
+        }
+    } if Error {
+        try {
+            FileDelete A_AppData . "\..\LocalLow" "\EBGM\Vehicles.txt"
+        }
+    Reload()
     }
 }
 
@@ -996,7 +1125,8 @@ RefreshHotkeys(Apply) { ; disables all known hotkeys and optionally re-enables a
                     Hotkey(
                         VehicleHotkeys[index],
                     VehicleMain.Bind(
-                        VehicleIDs[index]
+                        VehicleIDs[index],
+                        VehicleCustom[index]
                     ),
                     "On"
                     )
@@ -1069,6 +1199,21 @@ ToggleSub60Compat(Name, Pos, Menu) { ; toggles sub-60fps compatibility
     if FileExist(A_AppData . "\..\LocalLow" "\EBGM\ConfigV2.txt") {
         WriteToConfig()
     }
+}
+
+ToggleAutoBuy(Name, Pos, Menu) { ; toggles helicopter autobuy
+    global AutoBuy
+    if AutoBuy = "false" {
+        AutoBuy := "true"
+        Menu.Check(Name)
+    } else {
+        AutoBuy := "false"
+        Menu.Uncheck(Name)
+    }
+    if FileExist(A_AppData . "\..\LocalLow" "\EBGM\Vehicles.txt") {
+        WriteToVehicles()
+    }
+    RefreshHotkeys(true)
 }
 
 RestartRoblox() { ; restarts roblox
