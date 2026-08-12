@@ -271,8 +271,8 @@ Main(Weapons, Nerf, *) { ; gunstore logic
         }
         Send ("{Enter}")
         Send "\"
+        TogglePlayerInputs("Enable")
     }
-    TogglePlayerInputs("Enable")
 }
 
 VehicleMain(CarID, CustomID, *) { ; vehicle spawning logic
@@ -363,8 +363,8 @@ VehicleMain(CarID, CustomID, *) { ; vehicle spawning logic
                 Send "{DOWN}"
                 Send ("{Enter}")
                 Send "\"
+                TogglePlayerInputs("Enable")
             }
-            TogglePlayerInputs("Enable")
         }
     }
 }
@@ -396,10 +396,10 @@ HeliAutoBuy(*) { ; logic for the heli autobuy
                         Send "{UP}"
                         Send ("{ENTER}")
                         Send "\"
+                        TogglePlayerInputs("Enable")
                     }
                 }
             }
-            TogglePlayerInputs("Enable")
         }
     }
 }
