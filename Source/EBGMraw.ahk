@@ -130,6 +130,7 @@ Main(Weapons, Nerf, *) { ; gunstore logic
         } else {
             SleepTime := 30
         }
+        TogglePlayerInputs("Disable")
         Send "\"
         Send "{DOWN}"
         Send "{LEFT}"
@@ -271,12 +272,14 @@ Main(Weapons, Nerf, *) { ; gunstore logic
         Send ("{Enter}")
         Send "\"
     }
+    TogglePlayerInputs("Enable")
 }
 
 VehicleMain(CarID, CustomID, *) { ; vehicle spawning logic
     if WinActive("ahk_exe RobloxPlayerBeta.exe") {
         CarID := Integer(CarID)
         CustomID := Integer(CustomID)
+        TogglePlayerInputs("Disable")
         Send "\" ; a mess that is probably not optimized but it works with and without hotbar on normal and crewbattle servers so oh well I don't care I'm sleep deprived
         Send "{DOWN}"
         Send "{DOWN}"
@@ -314,6 +317,7 @@ VehicleMain(CarID, CustomID, *) { ; vehicle spawning logic
         }
         Send ("{Enter}")
         Send "\"
+        TogglePlayerInputs("Enable")
         if CustomID != 0 { ; custom apply logic
             Sleep 750
             WinGetPos &X, &Y, &W, &H, "ahk_exe RobloxPlayerBeta.exe"
@@ -322,6 +326,7 @@ VehicleMain(CarID, CustomID, *) { ; vehicle spawning logic
             RightCornerX := (61 / 100) * W
             RightCornerY := H - 40
             if PixelSearch(&Found1, &Found2, LeftCornerX, LeftCornerY, RightCornerX, RightCornerY, 0xD2425E, 0) {
+                TogglePlayerInputs("Disable")
                 Send "\"
                 Send "{DOWN}"
                 Send "{DOWN}"
@@ -359,6 +364,7 @@ VehicleMain(CarID, CustomID, *) { ; vehicle spawning logic
                 Send ("{Enter}")
                 Send "\"
             }
+            TogglePlayerInputs("Enable")
         }
     }
 }
@@ -377,10 +383,7 @@ HeliAutoBuy(*) { ; logic for the heli autobuy
             if PixelSearch(&Found1, &Found2, LeftCornerX, LeftCornerY, RightCornerX, RightCornerY, 0xD2425E, 0) { ; check for speedometer
                 if !PixelSearch(&Found3, &Found4, LeftCornerX, LeftCornerY, RightCornerX, RightCornerY, 0xB653B9, 0) { ; check for rocket fuel
                     if !PixelSearch(&Found3, &Found4, LeftCornerX, LeftCornerY, RightCornerX, RightCornerY, 0x832F36, 0) { ; check for missile bar
-                        Hotkey("W", DummyFunction)
-                        Hotkey("A", DummyFunction)
-                        Hotkey("S", DummyFunction)
-                        Hotkey("D", DummyFunction)
+                        TogglePlayerInputs("Disable")
                         Send "\"
                         Send "F"
                         Send "{DOWN}"
@@ -393,13 +396,10 @@ HeliAutoBuy(*) { ; logic for the heli autobuy
                         Send "{UP}"
                         Send ("{ENTER}")
                         Send "\"
-                        Hotkey("W", "Off")
-                        Hotkey("A", "Off")
-                        Hotkey("S", "Off")
-                        Hotkey("D", "Off")
                     }
                 }
             }
+            TogglePlayerInputs("Enable")
         }
     }
 }
@@ -1095,6 +1095,22 @@ DummyFunction(*) {
 BringToLatestPage(*)
 {
     Run("https://github.com/PCMon/EvenBetterGunMacro/releases/latest")
+}
+
+TogglePlayerInputs(Toggle) { ; enables or disables WASD keys to prevent macro disruption
+    if Toggle = "Disable" {
+        if WinActive("ahk_exe RobloxPlayerBeta.exe") {
+            Hotkey("W", DummyFunction)
+            Hotkey("A", DummyFunction)
+            Hotkey("S", DummyFunction)
+            Hotkey("D", DummyFunction)
+        }
+    } else if Toggle = "Enable" {
+        Hotkey("W", "Off")
+        Hotkey("A", "Off")
+        Hotkey("S", "Off")
+        Hotkey("D", "Off")
+    }
 }
 
 RefreshHotkeys(Apply) { ; disables all known hotkeys and optionally re-enables active ones
