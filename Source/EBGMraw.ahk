@@ -319,51 +319,59 @@ VehicleMain(CarID, CustomID, *) { ; vehicle spawning logic
         Send "\"
         TogglePlayerInputs("Enable")
         if CustomID != 0 { ; custom apply logic
-            Sleep 750
-            WinGetPos &X, &Y, &W, &H, "ahk_exe RobloxPlayerBeta.exe"
-            LeftCornerX := (39 / 100) * W
-            LeftCornerY := (70 / 100) * H
-            RightCornerX := (61 / 100) * W
-            RightCornerY := H - 40
-            if PixelSearch(&Found1, &Found2, LeftCornerX, LeftCornerY, RightCornerX, RightCornerY, 0xD2425E, 0) {
-                TogglePlayerInputs("Disable")
-                Send "\"
-                Send "{DOWN}"
-                Send "{DOWN}"
-                Send "{DOWN}"
-                Loop 25 {
-                    Send "{LEFT}"
+            Attempts := 0
+            Success := false
+            while (Attempts < 20 && Success = false) {
+                if WinActive("ahk_exe RobloxPlayerBeta.exe") {
+                    Attempts := Attempts + 1
+                    Sleep 50
+                    WinGetPos &X, &Y, &W, &H, "ahk_exe RobloxPlayerBeta.exe"
+                    LeftCornerX := (39 / 100) * W
+                    LeftCornerY := (70 / 100) * H
+                    RightCornerX := (61 / 100) * W
+                    RightCornerY := H - 40
+                    if PixelSearch(&Found1, &Found2, LeftCornerX, LeftCornerY, RightCornerX, RightCornerY, 0xD2425E, 0) {
+                        Success := true
+                        TogglePlayerInputs("Disable")
+                        Send "\"
+                        Send "{DOWN}"
+                        Send "{DOWN}"
+                        Send "{DOWN}"
+                        Loop 25 {
+                            Send "{LEFT}"
+                        }
+                        Send "{RIGHT}"
+                        Send ("{Enter}")
+                        Send "{UP}"
+                        Send "{UP}"
+                        Send "{DOWN}"
+                        Send ("{Enter}")
+                        Sleep 75
+                        Send "{RIGHT}"
+                        Row := Floor((CustomID - 1) / 5)
+                        Column := Mod(CustomID - 1, 5)
+                        Loop Column * 2 {
+                            Send "{RIGHT}"
+                        }
+                        Loop Row * 2 {
+                            Send "{DOWN}"
+                        }
+                        Send ("{Enter}")
+                        Sleep 75
+                        Loop 4 {
+                            Send "{UP}"
+                        }
+                        Send "{RIGHT}"
+                        Send "{RIGHT}"
+                        Send "{DOWN}"
+                        Send "{DOWN}"
+                        Send ("{Enter}")
+                        Send "{DOWN}"
+                        Send ("{Enter}")
+                        Send "\"
+                        TogglePlayerInputs("Enable")
+                    }
                 }
-                Send "{RIGHT}"
-                Send ("{Enter}")
-                Send "{UP}"
-                Send "{UP}"
-                Send "{DOWN}"
-                Send ("{Enter}")
-                Sleep 75
-                Send "{RIGHT}"
-                Row := Floor((CustomID - 1) / 5)
-                Column := Mod(CustomID - 1, 5)
-                Loop Column * 2 {
-                    Send "{RIGHT}"
-                }
-                Loop Row * 2 {
-                    Send "{DOWN}"
-                }
-                Send ("{Enter}")
-                Sleep 75
-                Loop 4 {
-                    Send "{UP}"
-                }
-                Send "{RIGHT}"
-                Send "{RIGHT}"
-                Send "{DOWN}"
-                Send "{DOWN}"
-                Send ("{Enter}")
-                Send "{DOWN}"
-                Send ("{Enter}")
-                Send "\"
-                TogglePlayerInputs("Enable")
             }
         }
     }
