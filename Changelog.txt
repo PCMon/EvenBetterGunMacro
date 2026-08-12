@@ -103,3 +103,11 @@ v2.6.1
 ## Fixes
 - Now checks for rocket fuel before running missile autobuy logic in order to reduce the odds of normal vehicles triggering it when sirens are enabled.
 - Updated heli autobuy inputs to work more consistently.
+
+v2.6.2
+## Changes
+- Now attempts to disable WASD keys when a macro is in progress to prevent disruption.
+- Quick vehicle customization now waits dynamically for a vehicle spawn before continuing, instead of a set sleep period.
+
+## Fixes
+- Quick vehicle customization now checks if the Roblox window is active before continuing.
