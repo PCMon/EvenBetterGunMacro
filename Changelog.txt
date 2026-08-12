@@ -26,6 +26,7 @@ v1.7
 - New warning GUI if you have UI nav disabled, with three options on how to handle it.
 - Now checks if your hotkey and loadout are valid before continuing setup.
 - Now supports dark and light mode depending on system preference in the tray menu.
+
 ## Fixes
 - Updated UI font and text scaling.
 - Fixed missing lightmode for the UI Nav warn GUI.
@@ -46,6 +47,7 @@ v2.0
 - Removed text button borders and gave them lighter backgrounds
 - Removed nerf owner setting GUI and added a nerf checkbox on the loadout GUI.
 - Hid minimize and maximize buttons on the titlebar.
+
 ## Fixes
 - Possibly fixed issues with GUIs when using Windows scaling options.
 - Improved hotkey enabling and disabling in order to prevent hotkey not triggering logic under certain conditions.
@@ -57,6 +59,7 @@ v2.1
 - Wrapped all main logic in a WinActive check to prevent gun store macro use outside of the roblox application.
 - Added more comments to the source code to clarify functionality.
 - New program icon.
+
 ## Fixes
 - Edited alignment inputs to account for new UIs, previously failed when no hotbar items existed.
 
@@ -65,6 +68,7 @@ v2.2
 - Added module for instant vehicle spawning.
 - Created new Vehicle Manager and Vehicle ID GUIs.
 - Altered some logic to function with new GUIs.
+
 ## Fixes
 - Now disables "Loadouts" tray objects when the Loadouts or Vehicle Spawning GUIs are open.
 
@@ -74,6 +78,7 @@ v2.3
 - Added tray object that opens the latest EBGM version on Github.
 - Moved 'EBGM Settings' tray object and added another divider.
 - Updates Pre-v2.3-r config files.
+
 ## Fixes
 - Now checks if Vehicle IDs are valid before continuing.
 - Now deletes Vehicles.txt when selecting the "Fix" option.
@@ -87,6 +92,7 @@ v2.4
 v2.5
 ## Changes
 - 'Fix (Clears Config)' is now 'Fix (Deletes Data)'.
+
 ## Fixes
 - Fixed an issue which caused the transition between second and first weapon categories to fail, resulting in a botched macro for some loadouts.
 - Added missing "flashlight" and "binoculars" text to the loadout input screen.
