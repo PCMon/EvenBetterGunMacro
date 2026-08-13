@@ -17,14 +17,14 @@ EBGM works on all server types and supports 60 fps by default, with an option to
 
 Unlike other macro options, we save all your choices. All your loadouts, vehicle spawns and more are automatically loaded when you launch EBGM.
 
----
+EBGM uses very little system resources, at around 3-5MB of memory!
 
 ## Installing
 
 Download the <a href="https://github.com/PCMon/EvenBetterGunMacro/releases/latest" target="_blank">latest version's executable or source code</a>. <br>
 EBGM has zero dependencies, so nothing other than <a href="https://autohotkey.com" target="_blank">AutoHotkey v2</a> is required to run the source!
 
-
+---
 ## Compiling
 
 1. Download the <a href="https://github.com/PCMon/EvenBetterGunMacro/releases/latest" target="_blank">source code</a> as well as <a href="https://autohotkey.com" target="_blank">AutoHotkey v2</a>. <sub>(Ctrl + Click to open in new tab.)</sub>
