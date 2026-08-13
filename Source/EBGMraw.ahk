@@ -131,14 +131,7 @@ Main(Weapons, Nerf, *) { ; gunstore logic
             SleepTime := 30
         }
         TogglePlayerInputs("Disable")
-        Send "\"
-        Send "{DOWN}"
-        Send "{LEFT}"
-        Send "{LEFT}"
-        Send "{RIGHT}"
-        Send "{UP}"
-        Send "{RIGHT}"
-        Send "{RIGHT}"
+        Send "\{DOWN}{LEFT}{LEFT}{RIGHT}{UP}{RIGHT}{RIGHT}"
         CurrentSlot := 1
         CurrentPage := 1
         for Weapon in WeaponSelectionArray {
@@ -157,8 +150,7 @@ Main(Weapons, Nerf, *) { ; gunstore logic
                     Loop CurrentSlot - SlotsToSubtract {
                         Send "{LEFT}"
                     }
-                    Send "{UP}" 
-                    Send ("{Enter}")
+                    Send "{UP}{Enter}"
                     Sleep SleepTime
                     Send "{RIGHT}"
                     CurrentSlot := 1
@@ -180,7 +172,7 @@ Main(Weapons, Nerf, *) { ; gunstore logic
                         Send DirectionToMove
                     }
                 }
-                Send ("{Enter}")
+                Send "{Enter}"
                 CurrentSlot := SlotDest
             }
             if SlotDest > 14 and SlotDest < 23 {
@@ -193,7 +185,7 @@ Main(Weapons, Nerf, *) { ; gunstore logic
                     Loop CurrentSlot - SlotsToSubtract {
                         Send "{LEFT}"
                     }
-                    Send ("{Enter}")
+                    Send "{Enter}"
                     Sleep SleepTime
                     Send "{RIGHT}"
                     CurrentPage := 2
@@ -214,14 +206,14 @@ Main(Weapons, Nerf, *) { ; gunstore logic
                 }
                 if (Weapon = "c4buy" or Weapon = "rpgbuy" or Weapon = "grenadebuy") {
                     loop 10 {
-                        Send ("{Enter}")
+                        Send "{Enter}"
                     }
                 } else if Weapon = "smokebuy" {
                     loop 3 {
-                        Send ("{Enter}")
+                        Send "{Enter}"
                     }
                 } else {
-                    Send ("{Enter}")
+                    Send "{Enter}"
                 }
                 CurrentSlot := SlotDest
             }
@@ -235,9 +227,7 @@ Main(Weapons, Nerf, *) { ; gunstore logic
                     Loop (CurrentSlot - SlotsToSubtract) - 1 {
                         Send "{LEFT}"
                     }
-                    Send "{DOWN}"
-                    Send "{LEFT}"
-                    Send ("{Enter}")
+                    Send "{DOWN}{LEFT}{Enter}"
                     Sleep SleepTime
                     Send "{RIGHT}"
                     CurrentPage := 3
@@ -256,7 +246,7 @@ Main(Weapons, Nerf, *) { ; gunstore logic
                         Send DirectionToMove
                     }
                 }
-                Send ("{Enter}")
+                Send "{Enter}"
                 CurrentSlot := SlotDest
             }
         }
@@ -269,8 +259,7 @@ Main(Weapons, Nerf, *) { ; gunstore logic
         loop CurrentSlot + 1 {
             Send "{LEFT}"
         }
-        Send ("{Enter}")
-        Send "\"
+        Send "{Enter}\"
         TogglePlayerInputs("Enable")
     }
 }
@@ -280,33 +269,11 @@ VehicleMain(CarID, CustomID, *) { ; vehicle spawning logic
         CarID := Integer(CarID)
         CustomID := Integer(CustomID)
         TogglePlayerInputs("Disable")
-        Send "\" ; a mess that is probably not optimized but it works with and without hotbar on normal and crewbattle servers so oh well I don't care I'm sleep deprived
-        Send "{DOWN}"
-        Send "{DOWN}"
-        Send "{DOWN}"
+        Send "\{DOWN}{DOWN}{DOWN}"
         Loop 25 {
             Send "{LEFT}"
         }
-        Send "{RIGHT}"
-        Send ("{Enter}")
-        Send "{UP}"
-        Send "{UP}"
-        Send "{UP}"
-        Send "{UP}"
-        Send "{UP}"
-        Send "{RIGHT}"
-        Send "{RIGHT}"
-        Send "{RIGHT}"
-        Send "{RIGHT}"
-        Send "{RIGHT}"
-        Send "{LEFT}"
-        Send "{UP}"
-        Send "{LEFT}"
-        Send "{LEFT}"
-        Send ("{Enter}")
-        Send "{RIGHT}"
-        Send "{RIGHT}"
-        Send "{DOWN}"
+        Send "{RIGHT}{Enter}{UP}{UP}{UP}{UP}{UP}{RIGHT}{RIGHT}{RIGHT}{RIGHT}{RIGHT}{LEFT}{UP}{LEFT}{LEFT}{Enter}{RIGHT}{RIGHT}{DOWN}"
         Row := Floor(CarID / 6)
         Column := Abs((Mod(CarID, 6)) - 6)
         Loop Column {
@@ -315,8 +282,7 @@ VehicleMain(CarID, CustomID, *) { ; vehicle spawning logic
         Loop Row * 2 {
             Send "{DOWN}"
         }
-        Send ("{Enter}")
-        Send "\"
+        Send "{Enter}\"
         TogglePlayerInputs("Enable")
         if CustomID != 0 { ; custom apply logic
             Attempts := 0
@@ -333,19 +299,11 @@ VehicleMain(CarID, CustomID, *) { ; vehicle spawning logic
                     if PixelSearch(&Found1, &Found2, LeftCornerX, LeftCornerY, RightCornerX, RightCornerY, 0xD2425E, 0) {
                         Success := true
                         TogglePlayerInputs("Disable")
-                        Send "\"
-                        Send "{DOWN}"
-                        Send "{DOWN}"
-                        Send "{DOWN}"
+                        Send "\{DOWN}{DOWN}{DOWN}"
                         Loop 25 {
                             Send "{LEFT}"
                         }
-                        Send "{RIGHT}"
-                        Send ("{Enter}")
-                        Send "{UP}"
-                        Send "{UP}"
-                        Send "{DOWN}"
-                        Send ("{Enter}")
+                        Send "{RIGHT}{Enter}{UP}{UP}{DOWN}{Enter}"
                         Sleep 75
                         Send "{RIGHT}"
                         Row := Floor((CustomID - 1) / 5)
@@ -356,19 +314,12 @@ VehicleMain(CarID, CustomID, *) { ; vehicle spawning logic
                         Loop Row * 2 {
                             Send "{DOWN}"
                         }
-                        Send ("{Enter}")
+                        Send "{Enter}"
                         Sleep 75
                         Loop 4 {
                             Send "{UP}"
                         }
-                        Send "{RIGHT}"
-                        Send "{RIGHT}"
-                        Send "{DOWN}"
-                        Send "{DOWN}"
-                        Send ("{Enter}")
-                        Send "{DOWN}"
-                        Send ("{Enter}")
-                        Send "\"
+                        Send "{RIGHT}{RIGHT}{DOWN}{DOWN}{Enter}{DOWN}{Enter}\"
                         TogglePlayerInputs("Enable")
                     }
                 }
@@ -392,18 +343,7 @@ HeliAutoBuy(*) { ; logic for the heli autobuy
                 if !PixelSearch(&Found3, &Found4, LeftCornerX, LeftCornerY, RightCornerX, RightCornerY, 0xB653B9, 0) { ; check for rocket fuel
                     if !PixelSearch(&Found3, &Found4, LeftCornerX, LeftCornerY, RightCornerX, RightCornerY, 0x832F36, 0) { ; check for missile bar
                         TogglePlayerInputs("Disable")
-                        Send "\"
-                        Send "F"
-                        Send "{DOWN}"
-                        Send "{DOWN}"
-                        Send "{DOWN}"
-                        Send "{DOWN}"
-                        Send "{LEFT}"
-                        Send "{UP}"
-                        Send "{RIGHT}"
-                        Send "{UP}"
-                        Send ("{ENTER}")
-                        Send "\"
+                        Send "\F{DOWN}{DOWN}{DOWN}{DOWN}{LEFT}{UP}{RIGHT}{UP}{ENTER}\"
                         TogglePlayerInputs("Enable")
                     }
                 }
@@ -456,7 +396,7 @@ HotkeyGUI(OOBE, Index, Vehicle, *) { ; hotkey GUI for setting a profile's hotkey
         EditBox := Window.Add("Edit", "x20 y" InteractableHeight " w70 h" Height + 4 " Center -E0x0200 +0x0200 Background" ButtonBackColor " " GUITextColor, LoadoutHotkeys[Index])
     }
     EditBox.Focus()
-    Send("{End}")
+    Send "{End}"
     Button := Window.Add("Text", "x100 y" InteractableHeight " w80 h" Height + 4 " Center +0x0200 Background" ButtonBackColor " " GUITextColor, "Continue")
     if OOBE = true {
         Button.OnEvent("Click", HotkeyCheckAndPassOOBE)
@@ -528,7 +468,7 @@ LoadoutGUI(OOBE, Index, *) { ; loadout GUI for setting a profile's loadout
     Window.Add("Text",, "Selections: nerfpistol nerfrevolver pistol shotgun rifle revolver flint ak sword uzi forcefield plasmapistol `nplasmashotgun sniper c4 c4buy smoke smokebuy grenade grenadebuy rpgbuy rpg flashlight binoculars`n(c4buy and rpgbuy automatically grab ten.)`n`nExample: pistol revolver shotgun c4 c4buy forcefield.")
     EditBox := Window.Add("Edit", "x20 y154 w512 h" Height + 4 " -E0x0200 +0x0200 Background" ButtonBackColor " " GUITextColor, LoadoutWeapons[Index])
     EditBox.Focus()
-    Send("{End}")
+    Send "{End}"
     Button := Window.Add("Text", "x540 y154 w80 h" Height + 4 " h" Height + 4 " Center +0x0200 Background" ButtonBackColor " " GUITextColor, "Continue")
     Button.GetPos(&ButtonX,&ButtonY,&ButtonWidth,&ButtonHeight)
     Window.Add("Text", "x" (ButtonX + ButtonWidth) - 55 " y" (ButtonY - ButtonHeight) - 8 " Center +0x0200 " GUITextColor, "Nerf? ")
@@ -828,7 +768,7 @@ NameGUI(Index, *) { ; name GUI for setting a profile's name
     InteractableHeight := BigTextY + BigTextHeight + 15
     EditBox := Window.Add("Edit", "x13 y" InteractableHeight " w75 h" Height + 4 " Center -E0x0200 +0x0200 Background" ButtonBackColor " " GUITextColor, LoadoutNames[Index])
     EditBox.Focus()
-    Send("{End}")
+    Send "{End}"
     Button := Window.Add("Text", "x93 y" InteractableHeight " w50 h" Height + 4 " Center +0x0200 Background" ButtonBackColor " " GUITextColor, "Done").OnEvent("Click", SubmitName)
     SubmitName(*) {
         LoadoutNames[Index] := EditBox.Value
@@ -851,7 +791,7 @@ IDsGUI(Index, IDType, *) { ; GUI for setting a vehicle spawn ID
     InteractableHeight := BigTextY + BigTextHeight + 15
     EditBox := Window.Add("Edit", "x13 y" InteractableHeight " w75 h" Height + 4 " Center -E0x0200 +0x0200 Background" ButtonBackColor " " GUITextColor, IDType[Index])
     EditBox.Focus()
-    Send("{End}")
+    Send "{End}"
     Button := Window.Add("Text", "x93 y" InteractableHeight " w50 h" Height + 4 " Center +0x0200 Background" ButtonBackColor " " GUITextColor, "Done").OnEvent("Click", SubmitID)
     SubmitID(*) {
         if IsDigit(EditBox.Value) {
