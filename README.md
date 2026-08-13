@@ -18,7 +18,7 @@ EBGM features three main modules currently:
 
 EBGM works on all server types and supports 60 fps by default, with an option to allow even lower framerates (like 20fps)!
 
-Unlike other macro options, we save all your choices. All your loadouts, vehicle spawns and more are automatically loaded when you launch EBGM.
+This is a standalone program, it does not create another file for you to use, it saves all your choices and automatically applies them each startup.
 
 EBGM uses very little system resources, at around 3-5MB of memory!
 
