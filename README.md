@@ -1,36 +1,36 @@
-# EvenBetterGunMacro! (AutoHotkey v2)
-# <a href="https://github.com/PCMon/EvenBetterGunMacro/releases/download/v2.6.2/EBGMcomp.exe" target="_blank">Install</a> 
-or [Compile](#compiling) and [Verify](#verifying).
+<a href="https://github.com/PCMon/EvenBetterGunMacro">
+   <img src="https://img.shields.io/badge/EvenBetterGunMacro-6925ff?style=flat-square" alt="EBGM" width="500" height="80"/>
+</a>
+<a href="https://github.com/PCMon/EvenBetterGunMacro/releases/download/v2.6.2/EBGMcomp.exe">
+   <img src="https://img.shields.io/badge/Install-blue?style=flat-square" alt="Install" width="125" height="55" />
+</a>
 
-<img width="1180" height="654" alt="Screenshot 2026-06-17 003444" src="https://github.com/user-attachments/assets/5ecabe27-f59b-480c-b178-8247c93a8cd7" />
-
----
-
-A customizable macro based tool intended to be used for Jailbreak.  
-
-
-Tired of a slow, unoptimized and static hardcoded gunstore macro? Be in and out of the gunstore before the door even closes!
-
-Featuring a customizable hotkey, loadout, and nerf status setting,
-optimized to work as fast as possible! (Times as low as **70ms** for 10 weapon loadouts + explosive refills!)
-
-Settings save, so you only need to input them once, boots without any GUI afterwards, to change your settings, simply right click it in the system tray!
-
-<img src=https://github.com/PCMon/EvenBetterGunMacro/blob/main/gif.gif/>
-
-Works on Regular, Highroller, Voicechat, AND Crew Battle servers. <br>
-Stable on 60fps by default, and even lower framerates if you enable compatibility!
+<img width="2559" height="1439" alt="Image" src="https://github.com/user-attachments/assets/d5116d3b-adec-49c4-bc01-5dba65960c8d" />
 
 ---
+
+EvenBetterGunMacro (EBGM) is a lightweight customizable AutoHotkey based program for Jailbreak.
+
+EBGM features three main modules currently:
+1. The main Gun Store Macro, for getting your loadouts in a snap.
+2. The Vehicle Spawning Macro, for summoning any vehicle you so choose with any save slot.
+3. The Missile Auto-Buy Macro, so you're never hit with that annoying pop-up when you go to take a shot.
+
+EBGM works on all server types and supports 60 fps by default, with an option to allow even lower framerates (like 20fps)!
+
+This is a standalone program, it does not create another file for you to use, it saves all your choices and automatically applies them each startup.
+
+EBGM uses very little system resources, at around 3-5MB of memory!
 
 ## Installing
 
-Download the <a href="https://github.com/PCMon/EvenBetterGunMacro/releases/latest" target="_blank">latest version's executable</a> or manually compile source.
+Download the <a href="https://github.com/PCMon/EvenBetterGunMacro/releases/latest" target="_blank">latest version's executable or source code</a>. <br>
+EBGM has zero dependencies, so nothing other than <a href="https://autohotkey.com" target="_blank">AutoHotkey v2</a> is required to run the source!
 
+---
 ## Compiling
 
 1. Download the <a href="https://github.com/PCMon/EvenBetterGunMacro/releases/latest" target="_blank">source code</a> as well as <a href="https://autohotkey.com" target="_blank">AutoHotkey v2</a>. <sub>(Ctrl + Click to open in new tab.)</sub>
-   - At this point you can use the raw .ahk file by launching it with AutoHotkey or continue to compile to an executable. <br><br>
 2. Right click the raw .ahk source and select `Compile Script (GUI)`. <br><br>
 3. Ensure the `Source (script file)` box has the correct location to your raw .ahk source code.
    - Set a custom icon for the program, the default for EBGM is included in the main directory and is required for the verification step to work.
