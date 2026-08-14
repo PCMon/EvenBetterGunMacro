@@ -1126,6 +1126,9 @@ CheckForUINav() { ; checks if roblox's UI navigation feature is enabled or not
             }
         }
     } if Error {
+        try {
+            FileDelete A_Startup "\EBGM.lnk"
+        }
         CustomGUI("You don't have Roblox installed. `nWhy on Earth are you running this program?", true, "Good Question.", EndApp, false, false, false)
     }
 }
