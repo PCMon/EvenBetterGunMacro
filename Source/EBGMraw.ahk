@@ -1113,15 +1113,19 @@ TrayDarkMode() { ; dll calls to set tray to darkmode
 }
 
 CheckForUINav() { ; checks if roblox's UI navigation feature is enabled or not
-    Config := StrSplit(FileRead(A_AppData . "\..\Local" "\Roblox\GlobalBasicSettings_13.xml"), "`n", "`r")
-    for Line in Config {
-        if InStr(Line, "UiNavigationKeyBindEnabled") {
-            if InStr(Line, "false") {
-                return false
-            } else {
-                return true
+    try {
+        Config := StrSplit(FileRead(A_AppData . "\..\Local" "\Roblox\GlobalBasicSettings_13.xml"), "`n", "`r")
+        for Line in Config {
+            if InStr(Line, "UiNavigationKeyBindEnabled") {
+                if InStr(Line, "false") {
+                    return false
+                } else {
+                    return true
+                }
             }
         }
+    } if Error {
+        CustomGUI("You don't have Roblox installed. `nWhy on Earth are you running this program?", true, "Good Question.", ExitApp, false, false, false)
     }
 }
 
