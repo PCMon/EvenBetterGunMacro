@@ -367,8 +367,9 @@ WelcomeGUI(*) { ; welcome GUI for OOBE
     Button := Window.Add("Text", "x15 y" interactableHeight " w" TextWidth " h35 Center +0x0200 Background" ButtonBackColor " " GUITextColor, "Continue")
     if CheckForUINav() {
         Button.OnEvent("Click", (*) => (Window.Destroy(), HotkeyGUI(true, 1, false)))
-    } else if !CheckForUINav() {
-        Button.OnEvent("Click", WelcomeCheckAndPass)
+    } else {
+        try
+            Button.OnEvent("Click", WelcomeCheckAndPass)
         WelcomeCheckAndPass(*) {
             Window.Destroy()
             UIWarnGUI(true)
@@ -820,9 +821,9 @@ UIWarnGUI(OOBE, *) { ; ui warn GUI for if EBGM detects roblox UI navigation is d
     Change := Window.Add("Text", "x15 y110 w197 h35 Center +0x0200 Background" ButtonBackColor " " GUITextColor, "Change Setting")
     LeaveAlone := Window.Add("Text", "x218 y110 w197 h35 Center +0x0200 Background" ButtonBackColor " " GUITextColor, "Do Nothing")
     if OOBE = true {
-        ChangeAndRestart.OnEvent("Click", (*) => (Window.Destroy(), EnableUINav(), RestartRoblox(), HotkeyGUI(true, LoadoutHotkeys[1], false)))
-        Change.OnEvent("Click", (*) => (Window.Destroy(), EnableUINav(), HotkeyGUI(true, LoadoutHotkeys[1], false)))
-        LeaveAlone.OnEvent("Click", (*) => (Window.Destroy(), HotkeyGUI(true, LoadoutHotkeys[1], false)))
+        ChangeAndRestart.OnEvent("Click", (*) => (Window.Destroy(), EnableUINav(), RestartRoblox(), Reload()))
+        Change.OnEvent("Click", (*) => (Window.Destroy(), EnableUINav(), Reload()))
+        LeaveAlone.OnEvent("Click", (*) => (Window.Destroy(), Reload()))
     } else if OOBE = false {
         ChangeAndRestart.OnEvent("Click", (*) => (Window.Destroy(), EnableUINav(), RestartRoblox()))
         Change.OnEvent("Click", (*) => (Window.Destroy(), EnableUINav()))
@@ -1125,7 +1126,9 @@ CheckForUINav() { ; checks if roblox's UI navigation feature is enabled or not
             }
         }
     } if Error {
-        CustomGUI("You don't have Roblox installed. `nWhy on Earth are you running this program?", true, "Good Question.", ExitApp, false, false, false)
+        A_TrayMenu.Disable("Loadouts")
+        A_TrayMenu.Disable("Vehicle Spawning")
+        CustomGUI("You don't have Roblox installed. `nWhy on Earth are you running this program?", true, "Good Question.", EndApp, false, false, false)
     }
 }
 
