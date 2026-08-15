@@ -1054,12 +1054,7 @@ BringToLatestPage(*)
 }
 
 ContactDiscord(*) {
-    try {
-        RegRead("HKEY_CLASSES_ROOT\Discord")
-        Run("discord://-/users/951192864833036388")
-    } catch TargetError {
-        Run("https://discord.com/users/951192864833036388")
-    }
+    Run("https://discord.gg/sx2VzzxDan")
 }
 
 ContactX(*) {
