@@ -31,7 +31,7 @@
 > #### This is a standalone program, it does not create another file for you to use, it saves all your choices and automatically applies them each launch.
 
 <div align="center">
-  <a href="https://discord.com/users/951192864833036388">
+  <a href="https://discord.gg/sx2VzzxDan">
     <img src="https://img.shields.io/badge/%20-%20-262626?logo=discord" width="75">
   </a>
   &nbsp;&nbsp;
