@@ -1,9 +1,10 @@
-<a href="https://github.com/PCMon/EvenBetterGunMacro">
-   <img src="https://img.shields.io/badge/EvenBetterGunMacro-6925ff?style=flat-square" alt="EBGM" width="500" height="80"/>
-</a>
-<a href="https://github.com/PCMon/EvenBetterGunMacro/releases/download/v2.6.2/EBGMcomp.exe">
-   <img src="https://img.shields.io/badge/Install-blue?style=flat-square" alt="Install" width="125" height="55" />
-</a>
+<h1 align="center">EvenBetterGunMacro</h1>   
+
+<p align="center">
+  <a href="https://github.com/PCMon/EvenBetterGunMacro/releases/download/v2.6.2/EBGMcomp.exe">
+    <img src="https://img.shields.io/badge/Install-blue?style=flat-square" alt="Install" width="130" height="55"/>
+  </a>
+</p>
 
 <img width="2559" height="1439" alt="Image" src="https://github.com/user-attachments/assets/d5116d3b-adec-49c4-bc01-5dba65960c8d" />
 
