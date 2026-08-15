@@ -9,61 +9,78 @@
 
 ---
 
-EvenBetterGunMacro (EBGM) is a lightweight customizable AutoHotkey based program for Jailbreak.
 
-EBGM features three main modules currently:
-1. The main Gun Store Macro, for getting your loadouts in a snap.
-2. The Vehicle Spawning Macro, for summoning any vehicle you so choose optionally with any save slot.
-3. The Missile Auto-Buy Macro, so you're never hit with that annoying pop-up when you go to take a shot.
+### EvenBetterGunMacro (EBGM) is a lightweight customizable AutoHotkey based program for Jailbreak. <br><br>
 
-EBGM works on all server types and supports 60 fps by default, with an option to allow even lower framerates (like 20fps)!
+> [!TIP]
+> EBGM features three main modules currently:
+>
+> 1. The main Gun Store Macro, for getting your loadouts in a snap.
+>
+> 2. The Vehicle Spawning Macro, for summoning any vehicle you so choose optionally with any save slot.
+>
+> 3. The Missile Auto-Buy Macro, so you're never hit with that annoying pop-up when you go to take a shot.
 
-This is a standalone program, it does not create another file for you to use, it saves all your choices and automatically applies them each startup.
+#  
 
-EBGM uses very little system resources, at around 3-5MB of memory!
+#### EBGM works on all server types and supports 60 fps by default, with an option to allow even lower framerates (like 20fps)!
 
-## Installing
+#### EBGM uses very little system resources, at around 3-5MB of memory! <br>
 
-Download the <a href="https://github.com/PCMon/EvenBetterGunMacro/releases/latest" target="_blank">latest version's executable or source code</a>. <br>
-EBGM has zero dependencies, so nothing other than <a href="https://autohotkey.com" target="_blank">AutoHotkey v2</a> is required to run the source!
+> [!IMPORTANT]
+> #### This is a standalone program, it does not create another file for you to use, it saves all your choices and automatically applies them each launch.
+
+# Installing
+
+Download the <a href="https://github.com/PCMon/EvenBetterGunMacro/releases/latest" target="_blank">**latest version's executable or source code**</a>. <br>
+<sub>EBGM has zero dependencies, so nothing other than <a href="https://autohotkey.com" target="_blank">AutoHotkey v2</a> is required to run the source!</sub>
+
+<a href="https://discord.com/users/951192864833036388">
+   <img src="https://img.shields.io/badge/Contact%20Me-pcmon-5865F2?logo=discord" alt="Install" width="195" height="30" />
+</a> <br>
+<a href="https://www.roblox.com/users/189272816/profile">
+   <img src="https://img.shields.io/badge/Contact%20Me-pcmon0-335fff?logo=roblox" alt="Install" width="203" height="30" />
+</a> <br>
 
 ---
 ## Compiling
 
-1. Download the <a href="https://github.com/PCMon/EvenBetterGunMacro/releases/latest" target="_blank">source code</a> as well as <a href="https://autohotkey.com" target="_blank">AutoHotkey v2</a>. <sub>(Ctrl + Click to open in new tab.)</sub>
-2. Right click the raw .ahk source and select `Compile Script (GUI)`. <br><br>
-3. Ensure the `Source (script file)` box has the correct location to your raw .ahk source code.
+#### 1. Download the <a href="https://github.com/PCMon/EvenBetterGunMacro/releases/latest" target="_blank">source code</a> as well as <a href="https://autohotkey.com" target="_blank">AutoHotkey v2</a>. <sub>(Ctrl + Click to open in new tab.)</sub> <br><br>
+#### 2. Right click the raw .ahk source and select `Compile Script (GUI)`. <br><br>
+#### 3. Ensure the `Source (script file)` box has the correct location to your raw .ahk source code.
    - Set a custom icon for the program, the default for EBGM is included in the main directory and is required for the verification step to work.
    - (Optional) Set a destination for your compiled exe to go. <br><br>
-5. Under `Base File (.bin, .exe)`, select v2.0.xx.
+#### 5. Under `Base File (.bin, .exe)`, select v2.0.xx.
    - Choose either U32 (AutoHotkey32.exe) or U64 (AutoHotkey64.exe).
      - Compiling with U64 may yield improved performance, but compiling with U32 will improve compatibility with older versions of windows. <br>
      <sub>EvenBetterGunMacro uses U64 by default, and choosing U32 may affect results in the verification stage.</sub><br><br>
-6. Finally, press **Convert**.
+#### 6. Finally, press **Convert**.
 
 ---
 
 ## Verifying
 
-You can verify that the newly compiled executable from the source is the same executable under releases with these steps.
+### You can verify that the newly compiled executable from the source is the same executable under releases with these steps.
 
-1. Navigate to <a href="https://github.com/PCMon/EvenBetterGunMacro/releases/latest" target="_blank">latest release</a> and view the SHA256 hash github automatically provides for that executable. <br>
+#### 1. Navigate to <a href="https://github.com/PCMon/EvenBetterGunMacro/releases/latest" target="_blank">latest release</a> and view the SHA256 hash github automatically provides for that executable. <br>
 <img width="1216" height="235" alt="example" src="https://github.com/user-attachments/assets/0ef8a20a-8b04-4baf-92cd-a1924a051c3d" /> <br><br>
 
-2. Open the Windows Command Prompt or a Powershell terminal. <sub>(Administrator privilages are not required.) <br><br>
-3. Run the Windows tool `certutil` by doing `certutil -hashfile C:\Path\To\Your\Program\program.exe SHA256`. <br><br>
-4. Verify that the output SHA256 hash is identical to that which is listed beside the executable on the releases tab.
+#### 2. Open the Windows Command Prompt or a Powershell terminal. <sub>(Administrator privilages are not required.) <br><br>
+#### 3. Run the Windows tool `certutil` by doing `certutil -hashfile C:\Path\To\Your\Program\program.exe SHA256`. <br><br>
+#### 4. Verify that the output SHA256 hash is identical to that which is listed beside the executable on the releases tab.
 
 ## License
 
-This project is licensed under the GNU General Public License v3.0.
-
-See the LICENSE file for details.
+> [!IMPORTANT]
+> This project is licensed under the GNU General Public License v3.0.
+> 
+> See the LICENSE file for details.
 
 ## Trademarks
 
-"EvenBetterGunMacro", "EBGM", and associated logos and artwork are not
-licensed under the GPL.
-
-See TRADEMARKS.md for the project's trademark policy.
+> [!IMPORTANT]
+> "EvenBetterGunMacro", "EBGM", and associated logos and artwork are not
+> licensed under the GPL.
+> 
+> See TRADEMARKS.md for the project's trademark policy.
 
