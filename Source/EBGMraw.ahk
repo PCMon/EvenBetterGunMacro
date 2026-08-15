@@ -47,12 +47,18 @@ SubMenuSettings := Menu() ; assemble tray menu
 SubMenuSettings.Add("Run on Startup", ToggleStartup)
 SubMenuSettings.Add("Sub 60 Compat", ToggleSub60Compat)
 
+ContactMenu := Menu()
+ContactMenu.Add("Discord", ContactDiscord)
+ContactMenu.Add("Roblox", ContactRoblox)
+ContactMenu.Add("X", ContactX)
+
 A_TrayMenu.Add("Loadouts", LoadoutsGUI)
 A_TrayMenu.Add("Vehicle Spawning", VehiclesGUI)
 A_TrayMenu.Add("Heli AutoBuy", ToggleAutoBuy)
 A_TrayMenu.Add()
-A_TrayMenu.Add("Latest Version", BringToLatestPage)
 A_TrayMenu.Add("EBGM Settings", SubMenuSettings)
+A_TrayMenu.Add("Latest Version", BringToLatestPage)
+A_TrayMenu.Add("Contact Me", ContactMenu)
 A_TrayMenu.Add()
 A_TrayMenu.Add("Fix (Deletes Data)", EndApp.Bind(true))
 A_TrayMenu.Add("Exit", EndApp)
@@ -1044,6 +1050,28 @@ DummyFunction(*) {
 BringToLatestPage(*)
 {
     Run("https://github.com/PCMon/EvenBetterGunMacro/releases/latest")
+}
+
+ContactDiscord(*) {
+    try {
+        RegRead("HKEY_CLASSES_ROOT\Discord")
+        Run("discord://-/users/951192864833036388")
+    } catch TargetError {
+        Run("https://discord.com/users/951192864833036388")
+    }
+}
+
+ContactRoblox(*) {
+    try {
+        RegRead("HKEY_CLASSES_ROOT\roblox")
+        Run("roblox://navigation/profile?userId=189272816")
+    } catch TargetError {
+        Run("https://www.roblox.com/users/189272816/profile")
+    }
+} 
+
+ContactX(*) {
+    Run("https://x.com/pcmon0")
 }
 
 TogglePlayerInputs(Toggle) { ; enables or disables WASD keys to prevent macro disruption
