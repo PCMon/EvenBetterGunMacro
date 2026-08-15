@@ -10,7 +10,6 @@
 
 ---
 
-
 ### EvenBetterGunMacro (EBGM) is a lightweight customizable AutoHotkey based program for Jailbreak. <br><br>
 
 > [!TIP]
@@ -84,4 +83,3 @@ Download the <a href="https://github.com/PCMon/EvenBetterGunMacro/releases/lates
 > licensed under the GPL.
 > 
 > See TRADEMARKS.md for the project's trademark policy.
-
