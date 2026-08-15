@@ -48,9 +48,9 @@ SubMenuSettings.Add("Run on Startup", ToggleStartup)
 SubMenuSettings.Add("Sub 60 Compat", ToggleSub60Compat)
 
 ContactMenu := Menu()
-ContactMenu.Add("Discord", ContactDiscord)
-ContactMenu.Add("Roblox", ContactRoblox)
-ContactMenu.Add("X", ContactX)
+ContactMenu.Add("Discord (Fast)", ContactDiscord)
+ContactMenu.Add("X (Moderate)", ContactX)
+ContactMenu.Add("Email (Slow)", ContactEmail)
 
 A_TrayMenu.Add("Loadouts", LoadoutsGUI)
 A_TrayMenu.Add("Vehicle Spawning", VehiclesGUI)
@@ -361,6 +361,7 @@ HeliAutoBuy(*) { ; logic for the heli autobuy
 ; GUIS
 WelcomeGUI(*) { ; welcome GUI for OOBE 
     A_TrayMenu.Disable("Loadouts")
+    A_TrayMenu.Disable("Vehicle Spawning")
     global Window := Gui("+LastFound -MinimizeBox -MaximizeBox", "EvenBetterGunMacro")
     DllCalls()
     Window.BackColor := GUIBackColor
@@ -1061,17 +1062,15 @@ ContactDiscord(*) {
     }
 }
 
-ContactRoblox(*) {
-    try {
-        RegRead("HKEY_CLASSES_ROOT\roblox")
-        Run("roblox://navigation/profile?userId=189272816")
-    } catch TargetError {
-        Run("https://www.roblox.com/users/189272816/profile")
-    }
-} 
-
 ContactX(*) {
     Run("https://x.com/pcmon0")
+}
+
+ContactEmail(*) {
+    A_Clipboard := "evenbettergunmacro@gmail.com"
+    MouseGetPos(&X, &Y)
+    SetTimer () => ToolTip(), -2000
+    ToolTip("Copied!", X, Y)
 }
 
 TogglePlayerInputs(Toggle) { ; enables or disables WASD keys to prevent macro disruption
