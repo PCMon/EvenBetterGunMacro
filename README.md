@@ -30,17 +30,24 @@
 > [!IMPORTANT]
 > #### This is a standalone program, it does not create another file for you to use, it saves all your choices and automatically applies them each launch.
 
+<div align="center">
+  <a href="https://discord.com/users/951192864833036388">
+    <img src="https://img.shields.io/badge/%20-%20-262626?logo=discord" width="75">
+  </a>
+  &nbsp;&nbsp;
+  <a href="https://www.roblox.com/users/189272816/profile">
+    <img src="https://img.shields.io/badge/%20-%20-335fff?logo=roblox" width="75">
+  </a>
+  &nbsp;&nbsp;
+  <a href="https://x.com/pcmon0">
+    <img src="https://img.shields.io/badge/%20-%20-2d2d2d?logo=x" width="75">
+  </a>
+</div>
+
 # Installing
 
 Download the <a href="https://github.com/PCMon/EvenBetterGunMacro/releases/latest" target="_blank">**latest version's executable or source code**</a>. <br>
 <sub>EBGM has zero dependencies, so nothing other than <a href="https://autohotkey.com" target="_blank">AutoHotkey v2</a> is required to run the source!</sub>
-
-<a href="https://discord.com/users/951192864833036388">
-   <img src="https://img.shields.io/badge/Contact%20Me-pcmon-5865F2?logo=discord" alt="Install" width="195" height="30" />
-</a> <br>
-<a href="https://www.roblox.com/users/189272816/profile">
-   <img src="https://img.shields.io/badge/Contact%20Me-pcmon0-335fff?logo=roblox" alt="Install" width="203" height="30" />
-</a> <br>
 
 ---
 # Compiling
