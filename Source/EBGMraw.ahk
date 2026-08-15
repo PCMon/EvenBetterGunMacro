@@ -49,8 +49,8 @@ SubMenuSettings.Add("Sub 60 Compat", ToggleSub60Compat)
 
 ContactMenu := Menu()
 ContactMenu.Add("Discord (Fast)", ContactDiscord)
-ContactMenu.Add("X (Moderate)", ContactX)
-ContactMenu.Add("Email (Slow)", ContactEmail)
+ContactMenu.Add("Email (Moderate)", ContactEmail)
+ContactMenu.Add("X (Slow)", ContactX)
 
 A_TrayMenu.Add("Loadouts", LoadoutsGUI)
 A_TrayMenu.Add("Vehicle Spawning", VehiclesGUI)
