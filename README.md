@@ -43,7 +43,7 @@ Download the <a href="https://github.com/PCMon/EvenBetterGunMacro/releases/lates
 </a> <br>
 
 ---
-## Compiling
+# Compiling
 
 #### 1. Download the <a href="https://github.com/PCMon/EvenBetterGunMacro/releases/latest" target="_blank">source code</a> as well as <a href="https://autohotkey.com" target="_blank">AutoHotkey v2</a>. <sub>(Ctrl + Click to open in new tab.)</sub> <br><br>
 #### 2. Right click the raw .ahk source and select `Compile Script (GUI)`. <br><br>
@@ -56,8 +56,6 @@ Download the <a href="https://github.com/PCMon/EvenBetterGunMacro/releases/lates
      <sub>EvenBetterGunMacro uses U64 by default, and choosing U32 may affect results in the verification stage.</sub><br><br>
 #### 6. Finally, press **Convert**.
 
----
-
 ## Verifying
 
 ### You can verify that the newly compiled executable from the source is the same executable under releases with these steps.
@@ -66,8 +64,10 @@ Download the <a href="https://github.com/PCMon/EvenBetterGunMacro/releases/lates
 <img width="1216" height="235" alt="example" src="https://github.com/user-attachments/assets/0ef8a20a-8b04-4baf-92cd-a1924a051c3d" /> <br><br>
 
 #### 2. Open the Windows Command Prompt or a Powershell terminal. <sub>(Administrator privilages are not required.) <br><br>
-#### 3. Run the Windows tool `certutil` by doing `certutil -hashfile C:\Path\To\Your\Program\program.exe SHA256`. <br><br>
+#### 3. Run the Windows tool `certutil` by doing `certutil -hashfile C:\Path\To\EBGM.exe SHA256`. <br><br>
 #### 4. Verify that the output SHA256 hash is identical to that which is listed beside the executable on the releases tab.
+
+---
 
 ## License
 
