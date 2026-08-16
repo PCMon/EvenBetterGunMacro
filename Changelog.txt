@@ -117,3 +117,9 @@ v2.6.2
 
 ## Fixes
 - Quick vehicle customization now checks if the Roblox window is active before continuing.
+
+v2.6.3
+## Changes
+- Added 'Contact Me' system tray list.
+## Fixes
+- Should no longer error when launching without Roblox installed.
