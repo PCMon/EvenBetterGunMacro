@@ -73,6 +73,7 @@ Download the <a href="https://github.com/PCMon/EvenBetterGunMacro/releases/lates
 #### 2. Open the Windows Command Prompt or a Powershell terminal. <sub>(Administrator privilages are not required.) <br><br>
 #### 3. Run the Windows tool `certutil` by doing `certutil -hashfile C:\Path\To\EBGM.exe SHA256`. <br><br>
 #### 4. Verify that the output SHA256 hash is identical to that which is listed beside the executable on the releases tab.
+- It is completely possible this will fail and result in a different hash, this can happen for a couple reasons, but I am going to work on compiling future releases with github actions for better trust.
 
 ---
 
