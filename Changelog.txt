@@ -123,3 +123,11 @@ v2.6.3
 - Added 'Contact Me' system tray list.
 ## Fixes
 - Should no longer error when launching without Roblox installed.
+
+v2.6.4
+## Changes
+- Now waits 100ms every Vehicle Spawning customizer check, still capping at maximum of 10 attempts (1s).
+- Created CheckForColor function for easier PixelSearch management.
+## Fixes
+- Missile AutoBuy now uses a different method of detecting the speedometer to prevent passenger presence interfering with checks.
+- Missile AutoBuy now taps enter twice to ensure false positives from the new speedometer check do not interfere with gameplay.
