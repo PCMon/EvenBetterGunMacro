@@ -1,7 +1,7 @@
 <h1 align="center">EvenBetterGunMacro</h1>   
 
 <p align="center">
-  <a href="https://github.com/PCMon/EvenBetterGunMacro/releases/download/v2.6.2/EBGMcomp.exe">
+  <a href="https://github.com/PCMon/EvenBetterGunMacro/releases/download/v2.6.4/EBGMcomp.exe">
     <img src="https://img.shields.io/badge/Install-blue?style=flat-square" alt="Install" width="130" height="55"/>
   </a>
 </p>
