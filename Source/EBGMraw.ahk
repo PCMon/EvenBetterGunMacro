@@ -293,16 +293,11 @@ VehicleMain(CarID, CustomID, *) { ; vehicle spawning logic
         if CustomID != 0 { ; custom apply logic
             Attempts := 0
             Success := false
-            while (Attempts < 20 && Success = false) {
+            while (Attempts < 10 && Success = false) {
                 if WinActive("ahk_exe RobloxPlayerBeta.exe") {
                     Attempts := Attempts + 1
-                    Sleep 50
-                    WinGetPos &X, &Y, &W, &H, "ahk_exe RobloxPlayerBeta.exe"
-                    LeftCornerX := (39 / 100) * W
-                    LeftCornerY := (70 / 100) * H
-                    RightCornerX := (61 / 100) * W
-                    RightCornerY := H - 40
-                    if PixelSearch(&Found1, &Found2, LeftCornerX, LeftCornerY, RightCornerX, RightCornerY, 0xD2425E, 0) {
+                    Sleep 100
+                    if CheckForColor("SpeedometerInit") {
                         Success := true
                         TogglePlayerInputs("Disable")
                         Send "\{DOWN}{DOWN}{DOWN}"
@@ -345,11 +340,11 @@ HeliAutoBuy(*) { ; logic for the heli autobuy
             RightCornerX := (61 / 100) * W
             RightCornerY := H - 40
             
-            if PixelSearch(&Found1, &Found2, LeftCornerX, LeftCornerY, RightCornerX, RightCornerY, 0xD2425E, 0) { ; check for speedometer
-                if !PixelSearch(&Found3, &Found4, LeftCornerX, LeftCornerY, RightCornerX, RightCornerY, 0xB653B9, 0) { ; check for rocket fuel
-                    if !PixelSearch(&Found3, &Found4, LeftCornerX, LeftCornerY, RightCornerX, RightCornerY, 0x832F36, 0) { ; check for missile bar
+            if CheckForColor("Speedometer") {
+                if !CheckForColor("Nitro") {
+                    if !CheckForColor("Rocket") {
                         TogglePlayerInputs("Disable")
-                        Send "\F{DOWN}{DOWN}{DOWN}{DOWN}{LEFT}{UP}{RIGHT}{UP}{ENTER}\"
+                        Send "\F{DOWN}{DOWN}{DOWN}{DOWN}{LEFT}{UP}{RIGHT}{UP}{ENTER}{ENTER}\"
                         TogglePlayerInputs("Enable")
                     }
                 }
@@ -1152,6 +1147,30 @@ CheckForUINav() { ; checks if roblox's UI navigation feature is enabled or not
             FileDelete A_Startup "\EBGM.lnk"
         }
         CustomGUI("You don't have Roblox installed. `nWhy on Earth are you running this program?", true, "Good Question.", EndApp, false, false, false)
+    }
+}
+
+CheckForColor(Target, *) {
+    Speedometer := false
+    if (Target = "SpeedometerInit" || Target = "Speedometer" || Target = "Nitro" || Target = "Rocket") {
+        Speedometer := true
+        if Target = "SpeedometerInit" {
+            Color := 0xD2425E
+        } else if Target = "Speedometer" {
+            Color := 0xFFFFFF
+        } else if Target = "Nitro" {
+            Color := 0xB653B9
+        } else if Target = "Rocket" {
+            Color := 0x832F36
+        }
+        WinGetPos &X, &Y, &W, &H, "ahk_exe RobloxPlayerBeta.exe"
+        if PixelSearch(&Found1, &Found2, (39 / 100) * W, (70 / 100) * H, (61 / 100) * W, H - 40, Color, 0) {
+            return true
+        } else {
+            return false
+        }
+    } else {
+        CustomGUI("Invalid CheckForColor scope.", true, "Oops.", EndApp, false, false, false)
     }
 }
 
