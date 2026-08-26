@@ -131,3 +131,7 @@ v2.6.4
 ## Fixes
 - Missile AutoBuy now uses a different method of detecting the speedometer to prevent passenger presence interfering with checks.
 - Missile AutoBuy now taps enter twice to ensure false positives from the new speedometer check do not interfere with gameplay.
+
+v2.6.5
+## Fixes
+- Reverted the Missile AutoBuy color check change due to triggering issues with some robbery bags.
