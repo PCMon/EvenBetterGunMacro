@@ -1,8 +1,8 @@
 ; Howdy ^-^
-version := "EBGM v2.6.4.0"
+version := "EBGM v2.6.5.0"
 
 #Requires AutoHotkey v2.0
-;@Ahk2Exe-SetVersion 2.6.4.0
+;@Ahk2Exe-SetVersion 2.6.5.0
 #SingleInstance Force
 Persistent
 
@@ -340,7 +340,7 @@ HeliAutoBuy(*) { ; logic for the heli autobuy
             RightCornerX := (61 / 100) * W
             RightCornerY := H - 40
             
-            if CheckForColor("Speedometer") {
+            if CheckForColor("SpeedometerInit") {
                 if !CheckForColor("Nitro") {
                     if !CheckForColor("Rocket") {
                         TogglePlayerInputs("Disable")
