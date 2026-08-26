@@ -135,3 +135,7 @@ v2.6.4
 v2.6.5
 ## Fixes
 - Reverted the Missile AutoBuy color check change due to triggering issues with some robbery bags.
+
+v2.6.6
+## Fixes
+- Added support for Non-US keyboard layouts.
