@@ -137,7 +137,7 @@ Main(Weapons, Nerf, *) { ; gunstore logic
             SleepTime := 30
         }
         TogglePlayerInputs("Disable")
-        Send "\{DOWN}{LEFT}{LEFT}{RIGHT}{UP}{RIGHT}{RIGHT}"
+        Send "{sc2B}{DOWN}{LEFT}{LEFT}{RIGHT}{UP}{RIGHT}{RIGHT}"
         CurrentSlot := 1
         CurrentPage := 1
         for Weapon in WeaponSelectionArray {
@@ -265,7 +265,7 @@ Main(Weapons, Nerf, *) { ; gunstore logic
         loop CurrentSlot + 1 {
             Send "{LEFT}"
         }
-        Send "{Enter}\"
+        Send "{Enter}{sc2B}"
         TogglePlayerInputs("Enable")
     }
 }
@@ -275,7 +275,7 @@ VehicleMain(CarID, CustomID, *) { ; vehicle spawning logic
         CarID := Integer(CarID)
         CustomID := Integer(CustomID)
         TogglePlayerInputs("Disable")
-        Send "\{DOWN}{DOWN}{DOWN}"
+        Send "{sc2B}{DOWN}{DOWN}{DOWN}"
         Loop 25 {
             Send "{LEFT}"
         }
@@ -288,7 +288,7 @@ VehicleMain(CarID, CustomID, *) { ; vehicle spawning logic
         Loop Row * 2 {
             Send "{DOWN}"
         }
-        Send "{Enter}\"
+        Send "{Enter}{sc2B}"
         TogglePlayerInputs("Enable")
         if CustomID != 0 { ; custom apply logic
             Attempts := 0
@@ -300,7 +300,7 @@ VehicleMain(CarID, CustomID, *) { ; vehicle spawning logic
                     if CheckForColor("SpeedometerInit") {
                         Success := true
                         TogglePlayerInputs("Disable")
-                        Send "\{DOWN}{DOWN}{DOWN}"
+                        Send "{sc2B}{DOWN}{DOWN}{DOWN}"
                         Loop 25 {
                             Send "{LEFT}"
                         }
@@ -320,7 +320,7 @@ VehicleMain(CarID, CustomID, *) { ; vehicle spawning logic
                         Loop 4 {
                             Send "{UP}"
                         }
-                        Send "{RIGHT}{RIGHT}{DOWN}{DOWN}{Enter}{DOWN}{Enter}\"
+                        Send "{RIGHT}{RIGHT}{DOWN}{DOWN}{Enter}{DOWN}{Enter}{sc2B}"
                         TogglePlayerInputs("Enable")
                     }
                 }
@@ -344,7 +344,7 @@ HeliAutoBuy(*) { ; logic for the heli autobuy
                 if !CheckForColor("Nitro") {
                     if !CheckForColor("Rocket") {
                         TogglePlayerInputs("Disable")
-                        Send "\F{DOWN}{DOWN}{DOWN}{DOWN}{LEFT}{UP}{RIGHT}{UP}{ENTER}{ENTER}\"
+                        Send "{sc2B}{sc21}{DOWN}{DOWN}{DOWN}{DOWN}{LEFT}{UP}{RIGHT}{UP}{ENTER}{ENTER}{sc2B}"
                         TogglePlayerInputs("Enable")
                     }
                 }
