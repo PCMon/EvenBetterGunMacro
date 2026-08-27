@@ -1,8 +1,8 @@
 ; Howdy ^-^
-version := "EBGM v2.6.6.0"
+version := "EBGM v2.6.7.0"
 
 #Requires AutoHotkey v2.0
-;@Ahk2Exe-SetVersion 2.6.6.0
+;@Ahk2Exe-SetVersion 2.6.7.0
 #SingleInstance Force
 Persistent
 
