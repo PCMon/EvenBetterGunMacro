@@ -280,8 +280,8 @@ VehicleMain(CarID, CustomID, *) { ; vehicle spawning logic
             Send "{LEFT}"
         }
         Send "{RIGHT}{Enter}{UP}{UP}{UP}{UP}{UP}{RIGHT}{RIGHT}{RIGHT}{RIGHT}{RIGHT}{LEFT}{UP}{LEFT}{LEFT}{Enter}{RIGHT}{RIGHT}{DOWN}"
-        Row := Floor(CarID / 6)
-        Column := Abs((Mod(CarID, 6)) - 6)
+        Row := Floor((CarID - 1) / 6)
+        Column := 5 - Mod(CarID - 1, 6)
         Loop Column {
             Send "{LEFT}"
         }
@@ -792,12 +792,16 @@ IDsGUI(Index, IDType, *) { ; GUI for setting a vehicle spawn ID
     Window.SetFont("norm s10 " TextAntiAliasing " " GUITextColor, Font)
     BigText.GetPos(, &BigTextY, , &BigTextHeight)
     InteractableHeight := BigTextY + BigTextHeight + 15
-    EditBox := Window.Add("Edit", "x13 y" InteractableHeight " w75 h" Height + 4 " Center -E0x0200 +0x0200 Background" ButtonBackColor " " GUITextColor, IDType[Index])
+    try {
+        EditBox := Window.Add("Edit", "x13 y" InteractableHeight " w75 h" Height + 4 " Center -E0x0200 +0x0200 Background" ButtonBackColor " " GUITextColor, IDType[Index])
+    } catch Error {
+        EditBox := Window.Add("Edit", "x13 y" InteractableHeight " w75 h" Height + 4 " Center -E0x0200 +0x0200 Background" ButtonBackColor " " GUITextColor, 0)
+    }
     EditBox.Focus()
     Send "{End}"
     Button := Window.Add("Text", "x93 y" InteractableHeight " w50 h" Height + 4 " Center +0x0200 Background" ButtonBackColor " " GUITextColor, "Done").OnEvent("Click", SubmitID)
     SubmitID(*) {
-        if IsDigit(EditBox.Value) {
+        if (IsDigit(EditBox.Value) && EditBox.Value != 0) {
             IDType[Index] := EditBox.Value
             Window.Destroy()
             WriteToVehicles()
@@ -805,7 +809,7 @@ IDsGUI(Index, IDType, *) { ; GUI for setting a vehicle spawn ID
             VehiclesGUI()
         } else {
             Window.Destroy()
-            CustomGUI("Please enter a valid ID.", true, "Continue", IDsGUI, Index, false, false)
+            CustomGUI("Please enter a valid ID.", true, "Continue", IDsGUI.Bind(Index, IDType), Index, false, false)
         }
     }
     Window.Show()
