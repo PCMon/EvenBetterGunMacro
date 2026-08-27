@@ -139,3 +139,10 @@ v2.6.5
 v2.6.6
 ## Fixes
 - Added support for Non-US keyboard layouts.
+
+v.2.6.7
+## Changes
+- Added some Vehicle ID checks.
+## Fixes
+- Vehicle spawning no longer breaks on multiples of six.
+- Made invalid Vehicle ID CustomGUI direct back to the correct function state.
