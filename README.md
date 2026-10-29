@@ -9,7 +9,9 @@
 <img width="2559" height="1439" alt="Image" src="https://github.com/user-attachments/assets/d5116d3b-adec-49c4-bc01-5dba65960c8d" />
 
 ---
-
+> [!WARNING]
+> Versions below v2.6.9 will NOT work anymore after a change to gun store UI behavior.
+---
 ### EvenBetterGunMacro (EBGM) is a lightweight customizable AutoHotkey based program for Jailbreak. <br><br>
 
 > [!TIP]
