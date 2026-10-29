@@ -156,3 +156,7 @@ v2.6.8
 
 ## Fixes
 - Gun store macro should now work when items are equipped.
+
+v2.6.9
+## Fixes
+- Hotfix for Jailbreak's gun store UI changes.
