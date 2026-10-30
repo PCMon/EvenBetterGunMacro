@@ -10,7 +10,7 @@
 
 ---
 > [!WARNING]
-> Versions below v2.6.9 will NOT work anymore after a change to gun store UI behavior.
+> If you recently downloaded the v2.6.9 hotfix, please downgrade to v2.6.8. The change to gunstore UI behavior was silently reverted.
 ---
 ### EvenBetterGunMacro (EBGM) is a lightweight customizable AutoHotkey based program for Jailbreak. <br><br>
 
