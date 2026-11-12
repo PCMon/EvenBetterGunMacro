@@ -1,8 +1,8 @@
 ; Howdy ^-^
-version := "EBGM v2.6.9.0"
+version := "EBGM v2.6.8.0"
 
 #Requires AutoHotkey v2.0
-;@Ahk2Exe-SetVersion 2.6.9.0
+;@Ahk2Exe-SetVersion 2.6.8.0
 #SingleInstance Force
 Persistent
 
@@ -22,7 +22,6 @@ global WeaponSlots := Map("nerfpistol", 1, "nerfrevolver", 2, "pistol", 3, "shot
 global PressedKeys := Map("W", false, "A", false, "S", false, "D", false, "Shift", false)
 
 UsesLightTheme := RegRead("HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize", "SystemUsesLightTheme") ; get system light/darkmode preference
-RobloxLocation := StrSplit(RegRead("HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Uninstall\roblox-player", "InstallLocation"), "Versions")
 Font := "Segoe UI"
 TextAntiAliasing := "q5" ; q3 = disabled, q4 = standard, q5 = cleartype
 if UsesLightTheme = 1 { ; set color values for GUI elements based on system preference
@@ -169,28 +168,15 @@ Main(Weapons, Nerf, *) { ; gunstore logic
             } else {
                 MsgBox("Invalid weapon name, '" Weapon "'. Please ensure your weapon's name is spelled and formatted correctly as described in the loadout settings.") ; LEGACY WARNING (you wont experience this unless you're editing the config file manually)
             }
-            if SlotDest < 15 { ; destination is weapons
+            if SlotDest < 15 {
                 if CurrentPage != 1 {
                     if CurrentPage = 2 {
-                        if CurrentSlot - 14 < 4 {
-                            loop CurrentSlot - 14 {
-                                Send "{LEFT}"
-                            }
-                        } else {
-                            loop 4 {
-                                Send "{LEFT}"
-                            }
-                        }
+                        SlotsToSubtract := 14
                     } else if CurrentPage = 3 {
-                        if CurrentSlot - 22 < 4 {
-                            loop CurrentSlot - 22 {
-                                Send "{LEFT}"
-                            }
-                        } else {
-                            loop 4 {
-                                Send "{LEFT}"
-                            }
-                        }
+                        SlotsToSubtract := 22
+                    }
+                    Loop CurrentSlot - SlotsToSubtract {
+                        Send "{LEFT}"
                     }
                     Send "{UP}{Enter}"
                     Sleep SleepTime
@@ -201,53 +187,31 @@ Main(Weapons, Nerf, *) { ; gunstore logic
                 if Nerf = "false" {
                     SlotDest := SlotDest - 2
                 }
-                if SlotDest > CurrentSlot {
-                    loop SlotDest - CurrentSlot {
-                        Send "{RIGHT}"
-                    }
-                } else if SlotDest < CurrentSlot {
-                    if CurrentSlot < 4 {
-                        loop CurrentSlot {
-                            Send "{LEFT}"
-                        }
-                    } else {
-                        loop 4 {
-                            Send "{LEFT}"
-                        }
-                    }
-                    Send "{UP}{ENTER}"
-                    Sleep SleepTime
-                    Send "{RIGHT}"
-                    CurrentSlot := 1
-                    loop SlotDest - CurrentSlot {
-                        Send "{RIGHT}"
+                SlotsToMove := SlotDest - CurrentSlot
+                if SlotsToMove > 0 {
+                    DirectionToMove := "{RIGHT}"
+                }
+                if SlotsToMove < 0 {
+                    DirectionToMove := "{LEFT}"
+                    SlotsToMove := Abs(SlotsToMove)
+                }
+                if SlotsToMove != 0 {
+                    Loop SlotsToMove {
+                        Send DirectionToMove
                     }
                 }
                 Send "{Enter}"
                 CurrentSlot := SlotDest
             }
-            if SlotDest > 14 and SlotDest < 23 { ; destination is explosives
+            if SlotDest > 14 and SlotDest < 23 {
                 if CurrentPage != 2 {
                     if CurrentPage = 1 {
-                        if CurrentSlot < 4 {
-                            loop CurrentSlot {
-                                Send "{LEFT}"
-                            }
-                        } else {
-                            loop 4 {
-                                Send "{LEFT}"
-                            }
-                        }
+                        SlotsToSubtract := 0
                     } else if CurrentPage = 3 {
-                        if CurrentSlot - 22 < 4 {
-                            loop CurrentSlot - 22 {
-                                Send "{LEFT}"
-                            }
-                        } else {
-                            loop 4 {
-                                Send "{LEFT}"
-                            }
-                        }
+                        SlotsToSubtract := 22
+                    }
+                    Loop CurrentSlot - SlotsToSubtract {
+                        Send "{LEFT}"
                     }
                     Send "{Enter}"
                     Sleep SleepTime
@@ -255,26 +219,17 @@ Main(Weapons, Nerf, *) { ; gunstore logic
                     CurrentPage := 2
                     CurrentSlot := 15
                 }
-                if SlotDest > CurrentSlot {
-                    loop SlotDest - CurrentSlot {
-                        Send "{RIGHT}"
-                    }
-                } else if SlotDest < CurrentSlot {
-                    if CurrentSlot < 4 {
-                        loop CurrentSlot - 14 {
-                            Send "{LEFT}"
-                        }
-                    } else {
-                        loop 4 {
-                            Send "{LEFT}"
-                        }
-                    }
-                    Send "{ENTER}"
-                    Sleep SleepTime
-                    Send "{RIGHT}"
-                    CurrentSlot := 15
-                    loop SlotDest - CurrentSlot {
-                        Send "{RIGHT}"
+                SlotsToMove := SlotDest - CurrentSlot
+                if SlotsToMove > 0 {
+                    DirectionToMove := "{RIGHT}"
+                }
+                if SlotsToMove < 0 {
+                    DirectionToMove := "{LEFT}"
+                    SlotsToMove := Abs(SlotsToMove)
+                }
+                if SlotsToMove != 0 {
+                    Loop SlotsToMove {
+                        Send DirectionToMove
                     }
                 }
                 if (Weapon = "c4buy" or Weapon = "rpgbuy" or Weapon = "grenadebuy") {
@@ -290,55 +245,33 @@ Main(Weapons, Nerf, *) { ; gunstore logic
                 }
                 CurrentSlot := SlotDest
             }
-            if SlotDest > 22 { ; destination is boosts
+            if SlotDest > 22 {
                 if CurrentPage != 3 {
                     if CurrentPage = 1 {
-                        if CurrentSlot < 4 {
-                            loop CurrentSlot {
-                                Send "{LEFT}"
-                            }
-                        } else {
-                            loop 4 {
-                                Send "{LEFT}"
-                            }
-                        }
+                        SlotsToSubtract := 0
                     } else if CurrentPage = 2 {
-                        if CurrentSlot - 14 < 4 {
-                            loop CurrentSlot - 14 {
-                                Send "{LEFT}"
-                            }
-                        } else {
-                            loop 4 {
-                                Send "{LEFT}"
-                            }
-                        }
+                        SlotsToSubtract := 14
                     }
-                    Send "{DOWN}{Enter}"
+                    Loop (CurrentSlot - SlotsToSubtract) - 1 {
+                        Send "{LEFT}"
+                    }
+                    Send "{DOWN}{LEFT}{Enter}"
                     Sleep SleepTime
                     Send "{RIGHT}"
                     CurrentPage := 3
                     CurrentSlot := 23
                 }
-                if SlotDest > CurrentSlot {
-                    loop SlotDest - CurrentSlot {
-                        Send "{RIGHT}"
-                    }
-                } else if SlotDest < CurrentSlot {
-                    if CurrentSlot < 4 {
-                        loop CurrentSlot - 22 {
-                            Send "{LEFT}"
-                        }
-                    } else {
-                        loop 4 {
-                            Send "{LEFT}"
-                        }
-                    }
-                    Send "{DOWN}{ENTER}"
-                    Sleep SleepTime
-                    Send "{RIGHT}"
-                    CurrentSlot := 23
-                    loop SlotDest - CurrentSlot {
-                        Send "{RIGHT}"
+                SlotsToMove := SlotDest - CurrentSlot
+                if SlotsToMove > 0  {
+                    DirectionToMove := "{RIGHT}"
+                }
+                if SlotsToMove < 0 {
+                    DirectionToMove := "{LEFT}"
+                    SlotsToMove := Abs(SlotsToMove)
+                }
+                if SlotsToMove != 0 {
+                    Loop SlotsToMove {
+                        Send DirectionToMove
                     }
                 }
                 Send "{Enter}"
@@ -346,15 +279,12 @@ Main(Weapons, Nerf, *) { ; gunstore logic
             }
         }
         if CurrentPage = 2 {
-            SlotDest := SlotDest - 14
+            CurrentSlot := CurrentSlot - 14
         }
         if CurrentPage = 3 {
-            SlotDest := SlotDest - 22
+            CurrentSlot := CurrentSlot - 22
         }
-        if CurrentPage = 1 {
-            SlotDest := 4
-        }
-        loop SlotDest + 1 {
+        loop CurrentSlot + 1 {
             Send "{LEFT}"
         }
         Send "{Enter}{sc2B}"
@@ -893,7 +823,7 @@ IDsGUI(Index, IDType, *) { ; GUI for setting a vehicle spawn ID
     Send "{End}"
     Button := Window.Add("Text", "x93 y" InteractableHeight " w50 h" Height + 4 " Center +0x0200 Background" ButtonBackColor " " GUITextColor, "Done").OnEvent("Click", SubmitID)
     SubmitID(*) {
-        if (IsDigit(EditBox.Value) && EditBox.Value >= 0) {
+        if (IsDigit(EditBox.Value) && EditBox.Value != 0) {
             IDType[Index] := EditBox.Value
             Window.Destroy()
             WriteToVehicles()
@@ -1240,7 +1170,7 @@ TrayDarkMode() { ; dll calls to set tray to darkmode
 
 CheckForUINav() { ; checks if roblox's UI navigation feature is enabled or not
     try {
-        Config := StrSplit(FileRead(RobloxLocation[1] . "GlobalBasicSettings_13.xml"), "`n", "`r")
+        Config := StrSplit(FileRead(A_AppData . "\..\Local" "\Roblox\GlobalBasicSettings_13.xml"), "`n", "`r")
         for Line in Config {
             if InStr(Line, "UiNavigationKeyBindEnabled") {
                 if InStr(Line, "false") {
@@ -1301,9 +1231,9 @@ CheckForColor(Target, *) {
 }
 
 EnableUINav() { ; rewrites roblox's GlobalBasicSettings_13 file to enable UI navigation
-    Config := FileRead(RobloxLocation[1] . "GlobalBasicSettings_13.xml")
+    Config := FileRead(A_AppData . "\..\Local" "\Roblox\GlobalBasicSettings_13.xml")
     NewConfig := StrReplace(Config, '<bool name="UiNavigationKeyBindEnabled">false</bool>', '<bool name="UiNavigationKeyBindEnabled">true</bool>')
-    ConfigFile := FileOpen(RobloxLocation[1] . "GlobalBasicSettings_13.xml", "w")
+    ConfigFile := FileOpen(A_AppData . "\..\Local" "\Roblox\GlobalBasicSettings_13.xml", "w")
     ConfigFile.Write(NewConfig)
     ConfigFile.Close
 }
