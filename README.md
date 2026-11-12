@@ -17,11 +17,11 @@
 > [!TIP]
 > EBGM features three main modules currently:
 >
-> 1. The main Gun Store Macro, for getting your loadouts in a snap.
+> 1. The main **Gun Store Macro**, for getting your loadouts in a snap.
 >
-> 2. The Vehicle Spawning Macro, for summoning any vehicle you so choose optionally with any save slot.
+> 2. The **Vehicle Spawning Macro**, for summoning any vehicle you so choose optionally with any save slot.
 >
-> 3. The Missile Auto-Buy Macro, so you're never hit with that annoying pop-up when you go to take a shot.
+> 3. The **Missile Auto-Buy Macro**, so you're never hit with that annoying pop-up when you go to take a shot.
 
 #  
 
